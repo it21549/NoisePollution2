@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">NoisePollutionApp</string>
+    <string name="app_title">Noise Recorder</string>
+    <string name="rec_button">Record</string>
+    <string name="avg_head">Average</string>
+    <string name="avg_max">Maximum</string>
+    <string name="alt_avg_head">Alternative Avg</string>
+    <string name="alt_max_head">Alternative Max</string>
+    <string name="avg_header">Average</string>
+    <string name="max_header">Maximum</string>
+    <string name="alt_avg_header">Alt Average</string>
+    <string name="alt_max_header">Alt Maximum</string>
+    <string name="acra_toast_text">Report has been sent to developer.</string>
+</resources>
