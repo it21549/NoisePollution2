@@ -40,7 +40,6 @@ public class NoiseRecorder  {
             }
         }, REC_TIME);
         System.out.println("Time stopped " + Calendar.getInstance().getTimeInMillis());
-        //recorder.stop();
         for(short s : data) {
             if(s>0)
                 average +=Math.abs(s);

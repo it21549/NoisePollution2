@@ -6,9 +6,11 @@
     <string name="avg_max">Maximum</string>
     <string name="alt_avg_head">Alternative Avg</string>
     <string name="alt_max_head">Alternative Max</string>
-    <string name="avg_header">Average</string>
-    <string name="max_header">Maximum</string>
-    <string name="alt_avg_header">Alt Average</string>
-    <string name="alt_max_header">Alt Maximum</string>
+    <string name="avg_header">Average 1</string>
+    <string name="max_header">Maximum 1</string>
+    <string name="alt_avg_header">Average 2</string>
+    <string name="alt_max_header">Maximum 2</string>
     <string name="acra_toast_text">Report has been sent to developer.</string>
+    <string name="live_db1">Decibel 1</string>
+    <string name="live_db2">Decibel 2</string>
 </resources>

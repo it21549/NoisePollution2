@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
             i.putExtra(Intent.EXTRA_SUBJECT, "Error Report");
             i.putExtra(Intent.EXTRA_TEXT, Log.getStackTraceString(ex));
             try {
+                Toast.makeText(MainActivity.this, "Please choose an email client to send report of what went wrong!",Toast.LENGTH_LONG).show();
                 startActivity(Intent.createChooser(i,"Send email"));
             } catch (android.content.ActivityNotFoundException x) {
                 Toast.makeText(MainActivity.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();

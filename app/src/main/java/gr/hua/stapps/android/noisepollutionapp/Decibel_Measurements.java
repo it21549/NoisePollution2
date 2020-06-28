@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.app.IntentService;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -22,34 +23,39 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
 public class Decibel_Measurements extends AppCompatActivity {
 
     private static final int PERMISSION_TO_RECORD = 1;
+    TableLayout tableLayout = null;
+    ProgressBar circularBar = null;
+
+    public class asyncTask extends AsyncTask {
+
+        @Override
+        public HashMap<String, String> doInBackground(Object[] objects) {
+            HashMap<String, String> decibels;
+            NoiseRecorder noiseRecorder = new NoiseRecorder();
+            decibels = noiseRecorder.getNoiseLevel();
+            return decibels;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+            resultPortray((HashMap<String, String>) o);
+        }
+    };
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_decibel__measurements);
-        final ProgressBar circular_bar = findViewById(R.id.circularBar);
-        final TableLayout tl = findViewById(R.id.results_table);
-
-        AsyncTask asyncTask = new AsyncTask() {
-            @Override
-            protected Object doInBackground(Object[] objects) {
-
-                HashMap<String, String> decibels;
-                NoiseRecorder nc = new NoiseRecorder();
-
-                //Start 10 second recording
-                decibels = nc.getNoiseLevel();
-
-                resultPortray(tl, circular_bar, decibels);
-                return null;
-            }
-        };
-
-
+        circularBar = findViewById(R.id.circularBar);
+        tableLayout = findViewById(R.id.results_table);
+        asyncTask task = new asyncTask();
+        task.execute();
         //Creating TableLayout
 /*
         try {
@@ -72,6 +78,7 @@ public class Decibel_Measurements extends AppCompatActivity {
         if (requestCode == PERMISSION_TO_RECORD) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 //Permission granted
+                Toast.makeText(this, "Permission to record Accepted", Toast.LENGTH_LONG).show();
             } else
                 //Permission denied
                 Toast.makeText(this, "Permission to record Denied", Toast.LENGTH_LONG).show();
@@ -79,7 +86,7 @@ public class Decibel_Measurements extends AppCompatActivity {
     }
 
 
-    public void resultPortray(TableLayout tl, ProgressBar progressBar, HashMap<String, String> decibels) {
+    public void resultPortray(HashMap<String, String> decibels) {
         if( ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             //When permission is not granted, show following message
             if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO)) {
@@ -129,9 +136,9 @@ public class Decibel_Measurements extends AppCompatActivity {
             label_alt_max.setPadding(5, 5, 5, 5);
             tr_head.addView(label_alt_max);
 
-            progressBar.setVisibility(View.GONE);
-            tl.setVisibility(View.VISIBLE);
-            tl.addView(tr_head, new TableLayout.LayoutParams(
+            circularBar.setVisibility(View.GONE);
+            tableLayout.setVisibility(View.VISIBLE);
+            tableLayout.addView(tr_head, new TableLayout.LayoutParams(
                     TableLayout.LayoutParams.MATCH_PARENT,
                     TableLayout.LayoutParams.WRAP_CONTENT
             ));
@@ -186,7 +193,7 @@ public class Decibel_Measurements extends AppCompatActivity {
             tablerow.addView(txt_alt_max);
 
             //Add new row
-            tl.addView(tablerow);
+            tableLayout.addView(tablerow);
         }
     }
 }
