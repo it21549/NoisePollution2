@@ -2,6 +2,7 @@
     <string name="app_name">NoisePollutionApp</string>
     <string name="app_title">Noise Recorder</string>
     <string name="rec_button">Record</string>
+    <string name="stop_button">Stop</string>
     <string name="avg_head">Average</string>
     <string name="avg_max">Maximum</string>
     <string name="alt_avg_head">Alternative Avg</string>

@@ -1,20 +1,10 @@
 package gr.hua.stapps.android.noisepollutionapp;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
-import android.app.IntentService;
-import android.app.ProgressDialog;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Layout;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TableLayout;
@@ -22,8 +12,11 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import java.util.HashMap;
-import java.util.concurrent.ExecutionException;
 
 public class Decibel_Measurements extends AppCompatActivity {
 
@@ -31,13 +24,13 @@ public class Decibel_Measurements extends AppCompatActivity {
     TableLayout tableLayout = null;
     ProgressBar circularBar = null;
 
-    public class asyncTask extends AsyncTask {
+    public class asyncRecording extends AsyncTask {
 
         @Override
         public HashMap<String, String> doInBackground(Object[] objects) {
             HashMap<String, String> decibels;
             NoiseRecorder noiseRecorder = new NoiseRecorder();
-            decibels = noiseRecorder.getNoiseLevel();
+            decibels = noiseRecorder.getNoiseLevelAverage();
             return decibels;
         }
 
@@ -46,7 +39,8 @@ public class Decibel_Measurements extends AppCompatActivity {
             super.onPostExecute(o);
             resultPortray((HashMap<String, String>) o);
         }
-    };
+    }
+
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -54,7 +48,7 @@ public class Decibel_Measurements extends AppCompatActivity {
         setContentView(R.layout.activity_decibel__measurements);
         circularBar = findViewById(R.id.circularBar);
         tableLayout = findViewById(R.id.results_table);
-        asyncTask task = new asyncTask();
+        asyncRecording task = new asyncRecording();
         task.execute();
         //Creating TableLayout
 /*

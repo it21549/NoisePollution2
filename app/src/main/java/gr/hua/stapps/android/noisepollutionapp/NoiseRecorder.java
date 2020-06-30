@@ -3,8 +3,6 @@ package gr.hua.stapps.android.noisepollutionapp;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
-import android.os.AsyncTask;
-import android.view.View;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -12,16 +10,25 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class NoiseRecorder  {
-    public static long REC_TIME = 10000;
+    public void setREC_TIME(long REC_TIME) {
+        this.REC_TIME = REC_TIME;
+    }
+
+    public void setBUF(int BUF) {
+        this.BUF = BUF;
+    }
+
+    public  int BUF=120;
+    public  long REC_TIME=10000;
     public static double reference = 0.00002;
     public static int MAX_DB = 91;
 
-    public HashMap getNoiseLevel() {
+    public HashMap getNoiseLevelAverage() {
         HashMap<String, String> results = new HashMap<>();
         int bufferSize = AudioRecord.getMinBufferSize(44100, AudioFormat.CHANNEL_IN_DEFAULT,AudioFormat.ENCODING_PCM_16BIT);
 
         //Increasing buffer size from 1 to 10 seconds
-        bufferSize = bufferSize*120;
+        bufferSize = bufferSize*BUF;
         final AudioRecord recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, 44100, AudioFormat.CHANNEL_IN_DEFAULT, AudioFormat.ENCODING_PCM_16BIT, bufferSize);
 
         short[] data = new short[bufferSize];
@@ -56,8 +63,8 @@ public class NoiseRecorder  {
         results.put("Average", String.format("%.2f", a));
         results.put("Maximum", String.format("%.2f", m));
 
-        double dba=0;
-        double dbm=0;
+        double dba;
+        double dbm;
         //Calculating the Pascal pressure based in the idea that the max amplitude (between 0 and 32767) is relative to the pressure
 
         double pressureA = x/51805.5336; //the value 51805.5336 can be derived from assuming that x=32767 -> 0.6325 Pa and x=1 -> 0.00002 Pa
