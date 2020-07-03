@@ -5,10 +5,12 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +20,7 @@ import androidx.core.app.ActivityCompat;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
@@ -26,13 +29,22 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_TO_RECORD = 0;
     private static final boolean Version = true;
+    private Handler handler;
+
+
     private View mLayout;
-    HashMap<String, String> decibels=null;
-    Runnable updater;
+    HashMap decibels=null;
     Button rec;
+    Button stop;
     TableLayout tableLayout;
+    TableRow tableRow;
     TextView algorithm1;
     TextView algorithm2;
+    TextView average1;
+    TextView average2;
+    float avg1 =0;
+    float avg2 =0;
+    int counter=0;
 /*
     Thread thread = new Thread(){
         @Override
@@ -53,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             i.setType("message/rfc822");
             i.putExtra(Intent.EXTRA_EMAIL, new String[]{"it21549@hua.gr"});
             i.putExtra(Intent.EXTRA_SUBJECT, "Error Report");
-            i.putExtra(Intent.EXTRA_TEXT, Log.getStackTraceString(ex));
+            i.putExtra(Intent.EXTRA_TEXT, ex.toString());
             try {
                 Toast.makeText(MainActivity.this, "Please choose an email client to send report of what went wrong!",Toast.LENGTH_LONG).show();
                 startActivity(Intent.createChooser(i,"Send email"));
@@ -71,13 +83,50 @@ public class MainActivity extends AppCompatActivity {
 
         mLayout = findViewById(R.id.main_layout);
         rec = findViewById(R.id.record_button);
+        stop = findViewById(R.id.stop_rec);
         tableLayout = findViewById(R.id.live_table);
+        tableRow = findViewById(R.id.tableRow_avg);
         algorithm1 = findViewById(R.id.live1);
         algorithm2 = findViewById(R.id.live2);
+        average1 = findViewById(R.id.average1);
+        average2 = findViewById(R.id.average2);
+
+        handler = new Handler();
+
         rec.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(Version)
+                new Thread(new Runnable() {
+                    long i = Calendar.getInstance().getTimeInMillis();
+                    @Override
+                    public void run() {
+                        while (Calendar.getInstance().getTimeInMillis() - i <= 10000) {
+                            try {
+                                Thread.sleep(350);
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        showRecordPreview();
+                                    }
+                                });
+                                counter++;
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                average1.setText(String.valueOf(avg1/counter));
+                                average2.setText(String.valueOf(avg2/counter));
+                                tableRow.setVisibility(View.VISIBLE);
+                            }
+                        });
+
+                    }
+                }).start();
+
+               /* if(Version)
                     showRecordPreview();
                 else {
                     //Separate Activity Implementation
@@ -88,16 +137,11 @@ public class MainActivity extends AppCompatActivity {
                             "gr.hua.stapps.android.noisepollutionapp",
                             "gr.hua.stapps.android.noisepollutionapp.Decibel_Measurements");
                     startActivity(intent);
-                }
+                }*/
             }
         });
 
-
-
-
     }
-
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -106,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
             //Request for Camera permission.
             if(grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 //Permission has been granted. Start Recording.
-                Snackbar.make(mLayout, "Permission to record granted", Snackbar.LENGTH_SHORT).show();
+                //Snackbar.make(mLayout, "Permission to record granted", Snackbar.LENGTH_SHORT).show();
                 startLiveRecording();
             } else {
                 //Permission request was denied.
@@ -120,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
                 == PackageManager.PERMISSION_GRANTED) {
             //Permission is already available, start recording.
-            Snackbar.make(mLayout, "Permission to record granted", Snackbar.LENGTH_SHORT).show();
+            //Snackbar.make(mLayout, "Permission to record granted", Snackbar.LENGTH_SHORT).show();
             startLiveRecording();
         } else {
             //Permission is missing and must be requested.
@@ -152,6 +196,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void startLiveRecording() {
         liveRecording liveRecording = new liveRecording();
+        
         try {
             decibels = liveRecording.calculate().get();
         } catch (ExecutionException e) {
@@ -159,17 +204,20 @@ public class MainActivity extends AppCompatActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
         if (decibels.containsKey("Average")) {
-            algorithm1.setText(decibels.get("Average"));
+            avg1 = avg1 + Float.parseFloat((String) decibels.get("Average"));
+            algorithm1.setText((CharSequence) decibels.get("Average"));
         } else
             algorithm1.setText("--");
-
-        if (decibels.containsKey("Algorithm 1 Average"))
-            algorithm2.setText(decibels.get("Algorithm 1 Average"));
-        else
+        if (decibels.containsKey("Algorithm 1 Average")) {
+            avg2 = avg2 + Float.parseFloat((String) decibels.get("Algorithm 1 Average"));
+            algorithm2.setText((CharSequence) decibels.get("Algorithm 1 Average"));
+        }else
             algorithm2.setText("--");
         if (tableLayout.getVisibility() == View.INVISIBLE)
             tableLayout.setVisibility(View.VISIBLE);
     }
+
+
+
 }

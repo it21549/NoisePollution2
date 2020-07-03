@@ -8,12 +8,14 @@ import java.util.concurrent.Future;
 
 public class liveRecording {
 
+
+
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    public Future<HashMap<String, String>> calculate() {
-        return executor.submit(new Callable<HashMap<String, String>>() {
+    public Future<HashMap> calculate() {
+        return executor.submit(new Callable<HashMap>() {
             @Override
-            public HashMap<String, String> call() throws Exception {
+            public HashMap call() {
                 NoiseRecorder noiseRecorder = new NoiseRecorder();
                 noiseRecorder.setREC_TIME(0);
                 noiseRecorder.setBUF(1);

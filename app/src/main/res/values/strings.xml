@@ -14,4 +14,5 @@
     <string name="acra_toast_text">Report has been sent to developer.</string>
     <string name="live_db1">Decibel 1</string>
     <string name="live_db2">Decibel 2</string>
+    <string name="local_service_started">12345</string>
 </resources>

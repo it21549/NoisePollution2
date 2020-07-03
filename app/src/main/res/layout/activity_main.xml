@@ -114,21 +114,40 @@
                 />
         </TableRow>
 
+        <TableRow
+            android:id="@+id/tableRow_avg"
+            android:layout_width="204dp"
+            android:layout_height="10dp"
+            android:visibility="invisible">
 
+            <TextView
+                android:id="@+id/average1"
+                android:layout_height="20dp"
+                android:layout_width="202dp"
+                android:gravity="center"
+                android:background="#F0F8FF"/>
 
+            <TextView
+                android:id="@+id/average2"
+                android:layout_height="20dp"
+                android:layout_width="202dp"
+                android:gravity="center"
+                android:background="#F0F8FF"/>
+        </TableRow>
     </TableLayout>
 
-   <!-- <Button
+    <Button
         android:id="@+id/stop_rec"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="invisible"
         android:text="Stop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.73"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.717" />-->
+        app:layout_constraintVertical_bias="0.717" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
