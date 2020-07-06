@@ -24,7 +24,7 @@ public class NoiseRecorder  {
     public static int MAX_DB = 91;
 
     public HashMap getNoiseLevelAverage() {
-        HashMap<String, String> results = new HashMap<>();
+        HashMap<String, Double> results = new HashMap<>();
         int bufferSize = AudioRecord.getMinBufferSize(44100, AudioFormat.CHANNEL_IN_DEFAULT,AudioFormat.ENCODING_PCM_16BIT);
 
         //Increasing buffer size from 1 to 10 seconds
@@ -60,8 +60,8 @@ public class NoiseRecorder  {
         //Stathis Algorithm
         double a = 20*Math.log10(x/32768) + MAX_DB;
         double m = 20*Math.log10(max/32768) + MAX_DB;
-        results.put("Average", String.format("%.2f", a));
-        results.put("Maximum", String.format("%.2f", m));
+        results.put("Average", a);
+        results.put("Maximum", m);
 
         double dba;
         double dbm;
@@ -71,8 +71,8 @@ public class NoiseRecorder  {
         double pressureM = max/51805.5336;
         dba = (20*Math.log10(pressureA/reference));
         dbm = (20*Math.log10(pressureM/reference));
-        results.put("Algorithm 1 Average", String.format("%.2f", dba));
-        results.put("Algorithm 2 Maximum", String.format("%.2f", dbm));
+        results.put("Algorithm 1 Average", dba);
+        results.put("Algorithm 2 Maximum", dbm);
         return results;
     }
 }

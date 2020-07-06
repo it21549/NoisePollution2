@@ -38,12 +38,13 @@ public class MainActivity extends AppCompatActivity {
     Button stop;
     TableLayout tableLayout;
     TableRow tableRow;
+    TableRow average;
     TextView algorithm1;
     TextView algorithm2;
     TextView average1;
     TextView average2;
-    float avg1 =0;
-    float avg2 =0;
+    double avg1 =0;
+    double avg2 =0;
     int counter=0;
 /*
     Thread thread = new Thread(){
@@ -65,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
             i.setType("message/rfc822");
             i.putExtra(Intent.EXTRA_EMAIL, new String[]{"it21549@hua.gr"});
             i.putExtra(Intent.EXTRA_SUBJECT, "Error Report");
-            i.putExtra(Intent.EXTRA_TEXT, ex.toString());
+            i.putExtra(Intent.EXTRA_TEXT, Log.getStackTraceString(ex));
             try {
                 Toast.makeText(MainActivity.this, "Please choose an email client to send report of what went wrong!",Toast.LENGTH_LONG).show();
                 startActivity(Intent.createChooser(i,"Send email"));
@@ -86,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
         stop = findViewById(R.id.stop_rec);
         tableLayout = findViewById(R.id.live_table);
         tableRow = findViewById(R.id.tableRow_avg);
+        average = findViewById(R.id.averageTitle);
         algorithm1 = findViewById(R.id.live1);
         algorithm2 = findViewById(R.id.live2);
         average1 = findViewById(R.id.average1);
@@ -96,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
         rec.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                rec.setClickable(false);
                 new Thread(new Runnable() {
                     long i = Calendar.getInstance().getTimeInMillis();
                     @Override
@@ -119,13 +122,14 @@ public class MainActivity extends AppCompatActivity {
                             public void run() {
                                 average1.setText(String.valueOf(avg1/counter));
                                 average2.setText(String.valueOf(avg2/counter));
+                                average.setVisibility(View.VISIBLE);
                                 tableRow.setVisibility(View.VISIBLE);
+
                             }
                         });
-
+                        rec.setClickable(true);
                     }
                 }).start();
-
                /* if(Version)
                     showRecordPreview();
                 else {
@@ -138,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
                             "gr.hua.stapps.android.noisepollutionapp.Decibel_Measurements");
                     startActivity(intent);
                 }*/
+
             }
         });
 
@@ -205,13 +210,13 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         if (decibels.containsKey("Average")) {
-            avg1 = avg1 + Float.parseFloat((String) decibels.get("Average"));
-            algorithm1.setText((CharSequence) decibels.get("Average"));
+            avg1 =  (avg1 + (Double) decibels.get("Average"));
+            algorithm1.setText(decibels.get("Average").toString());
         } else
             algorithm1.setText("--");
         if (decibels.containsKey("Algorithm 1 Average")) {
-            avg2 = avg2 + Float.parseFloat((String) decibels.get("Algorithm 1 Average"));
-            algorithm2.setText((CharSequence) decibels.get("Algorithm 1 Average"));
+            avg2 =  (avg2 + (Double) decibels.get("Algorithm 1 Average"));
+            algorithm2.setText(decibels.get("Algorithm 1 Average").toString());
         }else
             algorithm2.setText("--");
         if (tableLayout.getVisibility() == View.INVISIBLE)
