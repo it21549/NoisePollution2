@@ -46,16 +46,23 @@ public class MainActivity extends AppCompatActivity {
     double avg1 =0;
     double avg2 =0;
     int counter=0;
-/*
-    Thread thread = new Thread(){
-        @Override
-        public void run() {
-            super.run();
-            while(true)
-                showRecordPreview();
-        }
-    };
-*/
+    Boolean check_run = false;
+    private Boolean permission = false;
+
+    public void setPermission(Boolean permission) {
+        this.permission = permission;
+    }
+
+    /*
+        Thread thread = new Thread(){
+            @Override
+            public void run() {
+                super.run();
+                while(true)
+                    showRecordPreview();
+            }
+        };
+    */
     private Thread.UncaughtExceptionHandler handleAppCrash = new Thread.UncaughtExceptionHandler() {
         @Override
         public void uncaughtException(Thread thread, Throwable ex) {
@@ -93,44 +100,83 @@ public class MainActivity extends AppCompatActivity {
         average1 = findViewById(R.id.average1);
         average2 = findViewById(R.id.average2);
 
+        stop.setVisibility(View.VISIBLE);
         handler = new Handler();
+
+        /*new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    setPermission(true);
+                }  else {
+                    setPermission(false);
+                    requestMicPermission();
+                }
+            }
+        }).start();*/
+
 
         rec.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 rec.setClickable(false);
-                new Thread(new Runnable() {
-                    long i = Calendar.getInstance().getTimeInMillis();
-                    @Override
-                    public void run() {
-                        while (Calendar.getInstance().getTimeInMillis() - i <= 10000) {
-                            try {
-                                Thread.sleep(350);
-                                handler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        showRecordPreview();
-                                    }
-                                });
-                                counter++;
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                average1.setText(String.valueOf(avg1/counter));
-                                average2.setText(String.valueOf(avg2/counter));
-                                average.setVisibility(View.VISIBLE);
-                                tableRow.setVisibility(View.VISIBLE);
+                check_run = false;
+                //if(permission) {
+                    new Thread(new Runnable() {
+                        long i = Calendar.getInstance().getTimeInMillis();
 
+
+                        @Override
+                        public void run() {
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    stop.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            check_run = true;
+                                            //Toast.makeText(MainActivity.this, "Stopped Recording", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+                            });
+                            while (Calendar.getInstance().getTimeInMillis() - i <= 10000 && !check_run /*&& permission*/) {
+                                try {
+                                    Thread.sleep(400);
+
+                                    handler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            showRecordPreview();
+                                            //startLiveRecording();
+                                        }
+                                    });
+                                    counter++;
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
                             }
-                        });
-                        rec.setClickable(true);
-                    }
-                }).start();
-               /* if(Version)
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    average1.setText(String.valueOf(avg1 / counter));
+                                    average2.setText(String.valueOf(avg2 / counter));
+                                    average.setVisibility(View.VISIBLE);
+                                    tableRow.setVisibility(View.VISIBLE);
+                                }
+                            });
+                            rec.setClickable(true);
+                        }
+                    }).start();
+                /*} else {
+                    requestMicPermission();
+                    rec.setClickable(true);
+                }*/
+                /*if(Version)
                     showRecordPreview();
                 else {
                     //Separate Activity Implementation
@@ -151,15 +197,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Log.d("PERMISSIONS", "onRequestPermissionsResult()");
         if (requestCode == PERMISSION_TO_RECORD) {
-            //Request for Camera permission.
+            //Request for Audio permission.
             if(grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 //Permission has been granted. Start Recording.
                 //Snackbar.make(mLayout, "Permission to record granted", Snackbar.LENGTH_SHORT).show();
                 startLiveRecording();
+                //setPermission(true);
             } else {
                 //Permission request was denied.
                 Snackbar.make(mLayout, "Permission to record denied", Snackbar.LENGTH_SHORT).show();
+                //setPermission(false);
             }
         }
     }
@@ -173,6 +222,7 @@ public class MainActivity extends AppCompatActivity {
             startLiveRecording();
         } else {
             //Permission is missing and must be requested.
+            Log.d("PERMISSIONS", "requestPermission()");
             requestMicPermission();
         }
     }
@@ -183,16 +233,16 @@ public class MainActivity extends AppCompatActivity {
             // Provide an additional rationale to the user if the permission was not granted
             // and the user would benefit from additional context for the use of the permission.
             // Display a SnackBar with cda button to request the missing permission.
+            Log.d("PERMISSIONS", "requestMicPermission()/if");
             Snackbar.make(mLayout, "Permission to record audio is required", Snackbar.LENGTH_INDEFINITE).setAction("Audio Permission", new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     //Request the permission
-                    ActivityCompat.requestPermissions(MainActivity.this,
-                            new String[] {Manifest.permission.RECORD_AUDIO},
-                            PERMISSION_TO_RECORD);
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[] {Manifest.permission.RECORD_AUDIO}, PERMISSION_TO_RECORD);
                 }
             }).show();
         } else {
+            Log.d("PERMISSIONS", "requestMicPermission()/else");
             Snackbar.make(mLayout, "Audio recording not available", Snackbar.LENGTH_SHORT).show();
             //Request the permission. The result will be received in onRequestPermissionResult().
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSION_TO_RECORD);
