@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         stop.setVisibility(View.VISIBLE);
         handler = new Handler();
 
-        /*new Thread(new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
                 if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO)
@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
                     requestMicPermission();
                 }
             }
-        }).start();*/
+        }).start();
 
 
         rec.setOnClickListener(new View.OnClickListener() {
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 rec.setClickable(false);
                 check_run = false;
-                //if(permission) {
+                if(permission) {
                     new Thread(new Runnable() {
                         long i = Calendar.getInstance().getTimeInMillis();
 
@@ -144,13 +144,13 @@ public class MainActivity extends AppCompatActivity {
                             });
                             while (Calendar.getInstance().getTimeInMillis() - i <= 10000 && !check_run /*&& permission*/) {
                                 try {
-                                    Thread.sleep(400);
+                                    Thread.sleep(300);
 
                                     handler.post(new Runnable() {
                                         @Override
                                         public void run() {
-                                            showRecordPreview();
-                                            //startLiveRecording();
+                                            //showRecordPreview();
+                                            startLiveRecording();
                                         }
                                     });
                                     counter++;
@@ -172,10 +172,10 @@ public class MainActivity extends AppCompatActivity {
                             rec.setClickable(true);
                         }
                     }).start();
-                /*} else {
+                } else {
                     requestMicPermission();
                     rec.setClickable(true);
-                }*/
+                }
                 /*if(Version)
                     showRecordPreview();
                 else {
@@ -202,13 +202,13 @@ public class MainActivity extends AppCompatActivity {
             //Request for Audio permission.
             if(grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 //Permission has been granted. Start Recording.
-                //Snackbar.make(mLayout, "Permission to record granted", Snackbar.LENGTH_SHORT).show();
-                startLiveRecording();
-                //setPermission(true);
+                Snackbar.make(mLayout, "Permission to record granted", Snackbar.LENGTH_SHORT).show();
+                //startLiveRecording();
+                setPermission(true);
             } else {
                 //Permission request was denied.
                 Snackbar.make(mLayout, "Permission to record denied", Snackbar.LENGTH_SHORT).show();
-                //setPermission(false);
+                setPermission(false);
             }
         }
     }
@@ -251,9 +251,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void startLiveRecording() {
         liveRecording liveRecording = new liveRecording();
+
+        NoiseRecorder noiseRecorder = new NoiseRecorder();
         
         try {
-            decibels = liveRecording.calculate().get();
+            //decibels = liveRecording.calculate().get();
+            decibels = liveRecording.calculate(noiseRecorder).get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
