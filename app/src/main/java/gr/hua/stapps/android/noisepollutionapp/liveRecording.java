@@ -27,8 +27,6 @@ public class liveRecording {
         return executor.submit(new Callable<HashMap>() {
             @Override
             public HashMap call()  {
-                noiseRecorder.setREC_TIME(0);
-                noiseRecorder.setBUF(1);
                 return noiseRecorder.startRec();
             }
         });

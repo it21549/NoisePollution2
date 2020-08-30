@@ -4,6 +4,7 @@ package gr.hua.stapps.android.noisepollutionapp;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.AudioRecord;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -31,6 +32,15 @@ public class MainActivity extends AppCompatActivity {
     private static final boolean Version = true;
     private Handler handler;
 
+    //1-----------------------------------
+    String[] appPermissions = {
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.RECORD_AUDIO
+    };
+
+    private static final int PERMISSIONS_REQUEST_CODE = 1240;
+    //1------------------------------------
+
 
     private View mLayout;
     HashMap decibels=null;
@@ -46,23 +56,13 @@ public class MainActivity extends AppCompatActivity {
     double avg1 =0;
     double avg2 =0;
     int counter=0;
-    Boolean check_run = false;
+    Boolean check_run = false; // Value that determines if user asked to stop recording.
     private Boolean permission = false;
 
     public void setPermission(Boolean permission) {
         this.permission = permission;
     }
 
-    /*
-        Thread thread = new Thread(){
-            @Override
-            public void run() {
-                super.run();
-                while(true)
-                    showRecordPreview();
-            }
-        };
-    */
     private Thread.UncaughtExceptionHandler handleAppCrash = new Thread.UncaughtExceptionHandler() {
         @Override
         public void uncaughtException(Thread thread, Throwable ex) {
@@ -106,10 +106,17 @@ public class MainActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO)
-                        == PackageManager.PERMISSION_GRANTED) {
+                if (
+                        ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED)
+                        //2----
+                        /*&&
+                        ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)*/
+                        //2----
+                {
+                    System.out.println("Permission to record granted");
                     setPermission(true);
                 }  else {
+                    System.out.println("Permission to record not granted");
                     setPermission(false);
                     requestMicPermission();
                 }
@@ -125,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
                 if(permission) {
                     new Thread(new Runnable() {
                         long i = Calendar.getInstance().getTimeInMillis();
-
+                        final NoiseRecorder noiseRecorder = new NoiseRecorder();
 
                         @Override
                         public void run() {
@@ -138,6 +145,9 @@ public class MainActivity extends AppCompatActivity {
                                         public void onClick(View v) {
                                             check_run = true;
                                             //Toast.makeText(MainActivity.this, "Stopped Recording", Toast.LENGTH_SHORT).show();
+                                            if(noiseRecorder.recorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
+                                                noiseRecorder.stopRec();
+                                            }
                                         }
                                     });
                                 }
@@ -150,7 +160,8 @@ public class MainActivity extends AppCompatActivity {
                                         @Override
                                         public void run() {
                                             //showRecordPreview();
-                                            startLiveRecording();
+
+                                            startLiveRecording(noiseRecorder);
                                         }
                                     });
                                     counter++;
@@ -158,11 +169,9 @@ public class MainActivity extends AppCompatActivity {
                                     e.printStackTrace();
                                 }
                             }
-
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-
                                     average1.setText(String.valueOf(avg1 / counter));
                                     average2.setText(String.valueOf(avg2 / counter));
                                     average.setVisibility(View.VISIBLE);
@@ -173,6 +182,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }).start();
                 } else {
+                    Log.d("DEBUG", permission.toString());
                     requestMicPermission();
                     rec.setClickable(true);
                 }
@@ -197,6 +207,49 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        Log.d("DEBUG", "onRequestPermissionsResult");
+
+        //4----------------
+        /*if (requestCode == PERMISSIONS_REQUEST_CODE)
+        {
+            HashMap<String, Integer> permissionResults = new HashMap<>();
+            int deniedCount = 0;
+
+            //Gather permission grant results
+            for (int i=0; i<grantResults.length; i++)
+            {
+                // Add only permissions which are denied
+                if (grantResults[i] == PackageManager.PERMISSION_DENIED)
+                {
+                    Log.d("DEBUG", "denied permissions : " + permissions[i]);
+                    permissionResults.put(permissions[i], grantResults[i]);
+                    deniedCount++;
+                }
+            }
+
+            //Check if all permissions are granted
+            if (deniedCount == 0) {
+                Log.d("DEBUG", "deniedCount = 0");
+                setPermission(true);
+            }
+            else
+            {
+                for(Map.Entry<String, Integer> entry : permissionResults.entrySet())
+                {
+                    String permName = entry.getKey();
+                    int permResult = entry.getValue();
+
+                    if(permResult == PackageManager.PERMISSION_DENIED)
+                    {
+                        Snackbar.make(mLayout, permName + " not granted", Snackbar.LENGTH_SHORT).show();
+                        setPermission(false);
+                    }
+                }
+            }
+        }*/
+        //4----------------
+
         Log.d("PERMISSIONS", "onRequestPermissionsResult()");
         if (requestCode == PERMISSION_TO_RECORD) {
             //Request for Audio permission.
@@ -213,21 +266,39 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void showRecordPreview() {
-        //Check if Record permission is granted.
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-                == PackageManager.PERMISSION_GRANTED) {
-            //Permission is already available, start recording.
-            //Snackbar.make(mLayout, "Permission to record granted", Snackbar.LENGTH_SHORT).show();
-            startLiveRecording();
-        } else {
-            //Permission is missing and must be requested.
-            Log.d("PERMISSIONS", "requestPermission()");
-            requestMicPermission();
-        }
-    }
 
     private void requestMicPermission() {
+
+        //3---------------------------
+        //Check which permissions are granted
+        /*List<String> listPermissionsNeeded = new ArrayList<>();
+        for (String perm : appPermissions)
+        {
+            if(ContextCompat.checkSelfPermission(this, perm) != PackageManager.PERMISSION_GRANTED) {
+                listPermissionsNeeded.add(perm);
+            }
+        }
+
+        //Ask for non-granted permissions
+        if(!listPermissionsNeeded.isEmpty())
+        {
+            Log.d("NEW_PERM", listPermissionsNeeded.get(0));
+            ActivityCompat.requestPermissions
+                    (this,
+                    listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]),
+                    PERMISSIONS_REQUEST_CODE
+                    );
+            Log.d("DEBUG", "requested permissions");
+        } else {
+            Log.d("NEW_PERM", "request mic & location 2");
+            ActivityCompat.requestPermissions(
+                    this,
+                    listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]),
+                    PERMISSIONS_REQUEST_CODE
+            );
+        }*/
+
+        //3---------------------------
         //Permission has not been granted and must be requested.
         if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO)) {
             // Provide an additional rationale to the user if the permission was not granted
@@ -249,10 +320,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void startLiveRecording() {
+    private void startLiveRecording(NoiseRecorder noiseRecorder) {
         liveRecording liveRecording = new liveRecording();
 
-        NoiseRecorder noiseRecorder = new NoiseRecorder();
+        //NoiseRecorder noiseRecorder = new NoiseRecorder();
         
         try {
             //decibels = liveRecording.calculate().get();
@@ -263,13 +334,17 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         if (decibels.containsKey("Average")) {
-            avg1 =  (avg1 + (Double) decibels.get("Average"));
-            algorithm1.setText(decibels.get("Average").toString());
+            if(!Double.isNaN((Double) decibels.get("Average"))) {
+                avg1 = (avg1 + (Double) decibels.get("Average"));
+                algorithm1.setText(decibels.get("Average").toString());
+            }
         } else
             algorithm1.setText("--");
         if (decibels.containsKey("Algorithm 1 Average")) {
-            avg2 =  (avg2 + (Double) decibels.get("Algorithm 1 Average"));
-            algorithm2.setText(decibels.get("Algorithm 1 Average").toString());
+            if(!Double.isNaN((Double) decibels.get("Algorithm 1 Average"))) {
+                avg2 = (avg2 + (Double) decibels.get("Algorithm 1 Average"));
+                algorithm2.setText(decibels.get("Algorithm 1 Average").toString());
+            }
         }else
             algorithm2.setText("--");
         if (tableLayout.getVisibility() == View.INVISIBLE)

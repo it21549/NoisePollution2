@@ -25,7 +25,7 @@ public class NoiseRecorder {
     public long REC_TIME = 10000;
     public static double reference = 0.00002;
     public static int MAX_DB = 95;
-    private AudioRecord recorder;
+    public AudioRecord recorder;
     private int minBufferSize;
 
 
@@ -37,26 +37,27 @@ public class NoiseRecorder {
     }
 
     public HashMap<String, Double> startRec() {
-        short[] data = new short[minBufferSize];
-
+        final short[] data = new short[minBufferSize];
         System.out.println("Time started " + Calendar.getInstance().getTimeInMillis());
-        recorder.read(data, 0, minBufferSize);
+        int read_error = recorder.read(data, 0, data.length);
         System.out.println("Time stopped " + Calendar.getInstance().getTimeInMillis());
+        System.out.println(read_error);
         return computeDecibels(data);
     }
 
     private HashMap<String, Double> computeDecibels(short[] data) {
+
         HashMap<String, Double> results = new HashMap<>();
         double average = 0.0;
         int count = 0;
         for (short s : data) {
-            if (s>0) {
+            if (s!=0) {
                 average += Math.abs(s);
                 count++;
             }
         }
 
-        System.out.println("Data length = " + data.length + "minbuffer: " + minBufferSize + "|" + minBufferSize + "|" + count);
+        System.out.println("Data length = " + data.length + " minbuffer: " + minBufferSize + "|" + average + "|" + count);
 
         double x = average/count;
 
@@ -67,7 +68,7 @@ public class NoiseRecorder {
 
         results.put("Average", a);
         results.put("Algorithm 1 Average", dba);
-
+        //recorder.stop();
         return results;
     }
     public void stopRec() {
