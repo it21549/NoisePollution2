@@ -57,20 +57,21 @@
             android:layout_height="10dp">
 
             <TextView
-                android:layout_width="138dp"
+                android:layout_width="275dp"
                 android:layout_height="20dp"
+                android:layout_gravity="center"
                 android:background="#7FFFD4"
                 android:gravity="center"
                 android:text="@string/live_db1"
                 android:textStyle="bold" />
 
-            <TextView
+            <!--<TextView
                 android:layout_width="137dp"
                 android:layout_height="20dp"
                 android:background="#7FFFD4"
                 android:gravity="center"
                 android:text="@string/live_db2"
-                android:textStyle="bold" />
+                android:textStyle="bold" />-->
         </TableRow>
 
         <TableRow
@@ -79,17 +80,18 @@
 
             <TextView
                 android:id="@+id/live1"
-                android:layout_width="138dp"
+                android:layout_width="275dp"
                 android:layout_height="20dp"
                 android:background="#F0F8FF"
-                android:gravity="center" />
+                android:gravity="center"
+                android:layout_gravity="center"/>
 
-            <TextView
+            <!--<TextView
                 android:id="@+id/live2"
                 android:layout_width="137dp"
                 android:layout_height="20dp"
                 android:background="#F0F8FF"
-                android:gravity="center" />
+                android:gravity="center" />-->
 
         </TableRow>
 
@@ -100,20 +102,21 @@
             android:visibility="invisible">
 
             <TextView
-                android:layout_width="138dp"
+                android:layout_width="275dp"
                 android:layout_height="20dp"
                 android:background="#7FFFD4"
                 android:gravity="center"
                 android:text="@string/avg_header"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_gravity="center"/>
 
-            <TextView
+            <!--<TextView
                 android:layout_width="137dp"
                 android:layout_height="20dp"
                 android:background="#7FFFD4"
                 android:gravity="center"
                 android:text="@string/alt_avg_header"
-                android:textStyle="bold" />
+                android:textStyle="bold" />-->
         </TableRow>
 
         <TableRow
@@ -124,17 +127,18 @@
 
             <TextView
                 android:id="@+id/average1"
-                android:layout_width="138dp"
+                android:layout_width="275dp"
                 android:layout_height="20dp"
                 android:background="#F0F8FF"
-                android:gravity="center" />
+                android:gravity="center"
+                android:layout_gravity="center"/>
 
-            <TextView
+            <!--<TextView
                 android:id="@+id/average2"
                 android:layout_width="137dp"
                 android:layout_height="20dp"
                 android:background="#F0F8FF"
-                android:gravity="center" />
+                android:gravity="center" />-->
         </TableRow>
     </TableLayout>
 
@@ -150,6 +154,21 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.717" />
+
+    <Switch
+        android:id="@+id/upload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Upload:"
+        android:textOff="OFF"
+        android:textOn ="ON"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.889" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

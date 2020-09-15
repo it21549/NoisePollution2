@@ -23,10 +23,10 @@ public class liveRecording {
             }
         });
     }
-    public Future<HashMap> calculate(final NoiseRecorder noiseRecorder) {
-        return executor.submit(new Callable<HashMap>() {
+    public Future<Double> calculate(final NoiseRecorder noiseRecorder) {
+        return executor.submit(new Callable<Double>() {
             @Override
-            public HashMap call()  {
+            public Double call()  {
                 return noiseRecorder.startRec();
             }
         });

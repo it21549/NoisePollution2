@@ -36,7 +36,7 @@ public class NoiseRecorder {
         Log.i(LOG_TAG, "Recorder created");
     }
 
-    public HashMap<String, Double> startRec() {
+    public Double startRec() {
         final short[] data = new short[minBufferSize];
         System.out.println("Time started " + Calendar.getInstance().getTimeInMillis());
         int read_error = recorder.read(data, 0, data.length);
@@ -45,9 +45,8 @@ public class NoiseRecorder {
         return computeDecibels(data);
     }
 
-    private HashMap<String, Double> computeDecibels(short[] data) {
+    private Double computeDecibels(short[] data) {
 
-        HashMap<String, Double> results = new HashMap<>();
         double average = 0.0;
         int count = 0;
         for (short s : data) {
@@ -62,14 +61,8 @@ public class NoiseRecorder {
         double x = average/count;
 
         double a = 20*Math.log10(x/32768) + MAX_DB;
-        double dba;
-        double pressureA = x/51805.5336;
-        dba = (20*Math.log10(pressureA/reference));
 
-        results.put("Average", a);
-        results.put("Algorithm 1 Average", dba);
-        //recorder.stop();
-        return results;
+        return a;
     }
     public void stopRec() {
         recorder.stop();
@@ -107,7 +100,7 @@ public class NoiseRecorder {
         System.out.println("Time stopped " + Calendar.getInstance().getTimeInMillis());
         int count = 0;
         for(short s : data) {
-            if(s>0) {
+            if(s!=0) {
                 average += Math.abs(s);
             }else {
                 bufferSize--;

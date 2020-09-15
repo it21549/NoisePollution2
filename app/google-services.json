@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1082073814287",
+    "firebase_url": "https://noisepollutionlive.firebaseio.com",
+    "project_id": "noisepollutionlive",
+    "storage_bucket": "noisepollutionlive.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1082073814287:android:51fcd61ff0408a56265a7a",
+        "android_client_info": {
+          "package_name": "gr.hua.stapps.android.noisepollutionapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1082073814287-5ava17hqp67ma2gtptnondnedmsf09qf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrPdzYnOfqdMteTXXhCMtUhqpq72lnqI0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1082073814287-5ava17hqp67ma2gtptnondnedmsf09qf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
