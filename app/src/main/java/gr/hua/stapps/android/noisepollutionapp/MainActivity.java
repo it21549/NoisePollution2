@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.AudioRecord;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -47,7 +48,8 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int PERMISSION = 0;
+    private static final int REC_PERM = 0;
+    private static final int LOC_PERM = 1;
     private Handler handler;
     private Recording recording = new Recording(0.0,0.0,0.0);
 
@@ -101,6 +103,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Thread.setDefaultUncaughtExceptionHandler(handleAppCrash);
 
+        System.out.println(Build.BRAND);
+        if(Build.BRAND.contains("samsung"))
+            System.out.println("sam is sam");
+        else if(Build.BRAND.contains("Xiaomi"))
+            System.out.println("xiam is xiam");
+
+
         mLayout = findViewById(R.id.main_layout);
         rec = findViewById(R.id.record_button);
         stop = findViewById(R.id.stop_rec);
@@ -109,13 +118,34 @@ public class MainActivity extends AppCompatActivity {
         tableRow = findViewById(R.id.tableRow_avg);
         average = findViewById(R.id.averageTitle);
         algorithm1 = findViewById(R.id.live1);
-        //algorithm2 = findViewById(R.id.live2);
         average1 = findViewById(R.id.average1);
-        //average2 = findViewById(R.id.average2);
 
         stop.setVisibility(View.VISIBLE);
         handler = new Handler();
         mStorageRef = FirebaseStorage.getInstance().getReference();
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
+        locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(2 * 1000); // 2 seconds
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+                if(locationResult ==  null) {
+                    System.out.println("locationResult = null");
+                }
+                for(Location location : locationResult.getLocations()) {
+                    if(location !=null) {
+                        recording.setLatitude(location.getLatitude());
+                        recording.setLongitude(location.getLongitude());
+                        //Toast.makeText(MainActivity.this, "Lat:" + recording.getLatitude() + " Lon:" + recording.getLongitude(), Toast.LENGTH_SHORT).show();
+                        mFusedLocationClient.removeLocationUpdates(locationCallback);
+                    }
+                }
+            }
+        };
 
         new Thread(new Runnable() {
             @Override
@@ -177,6 +207,7 @@ public class MainActivity extends AppCompatActivity {
                                         @Override
                                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                                             if(isChecked) {
+
                                                 mFusedLocationClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
                                                 locationRequest = LocationRequest.create();
                                                 locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -262,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d("PERMISSIONS", "onRequestPermissionsResult()");
 
-        if (requestCode == PERMISSION) {
+        if (requestCode == REC_PERM) {
             //Request for permission.
             if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 //Permission has been granted. Start Recording.
@@ -279,7 +310,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void requestMicPermission() {
         //Permission has not been granted and must be requested.
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO)) {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, Manifest.permission.RECORD_AUDIO)) {
             // Provide an additional rationale to the user if the permission was not granted
             // and the user would benefit from additional context for the use of the permission.
             // Display a SnackBar with cda button to request the missing permission.
@@ -288,14 +319,14 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     //Request the permission
-                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSION);
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, REC_PERM);
                 }
             }).show();
         } else {
             Log.d("PERMISSIONS", "requestMicPermission()/else");
             Snackbar.make(mLayout, "Audio recording not available", Snackbar.LENGTH_SHORT).show();
             //Request the permission. The result will be received in onRequestPermissionResult().
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, PERMISSION);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO}, REC_PERM);
         }
     }
 
@@ -336,12 +367,12 @@ public class MainActivity extends AppCompatActivity {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            Toast.makeText(MainActivity.this, "Location permission is required", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(MainActivity.this, "Location permission is required", Toast.LENGTH_SHORT).show();
             Snackbar.make(mLayout, "Permission to access gps is required", Snackbar.LENGTH_INDEFINITE).setAction("Location Permission", new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     //Request the permission
-                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION);
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOC_PERM);
                 }
             }).show();
         } else {

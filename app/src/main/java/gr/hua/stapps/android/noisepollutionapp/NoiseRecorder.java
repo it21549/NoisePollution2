@@ -3,6 +3,7 @@ package gr.hua.stapps.android.noisepollutionapp;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.os.Build;
 import android.util.Log;
 
 import java.util.Calendar;
@@ -12,6 +13,7 @@ import java.util.TimerTask;
 
 public class NoiseRecorder {
     private static final String LOG_TAG = "NoiseRecorder";
+    private static final String BRAND = Build.BRAND;
 
     public void setREC_TIME(long REC_TIME) {
         this.REC_TIME = REC_TIME;
@@ -34,6 +36,12 @@ public class NoiseRecorder {
         recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, 44100, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, minBufferSize);
         recorder.startRecording();
         Log.i(LOG_TAG, "Recorder created");
+        if(BRAND.contains("samsung"))
+            MAX_DB = 95 + 4;
+        else if (BRAND.contains("Xiaomi"))
+            MAX_DB = 95 + 10;
+        else
+            MAX_DB = 95 + 9;
     }
 
     public Double startRec() {
@@ -47,18 +55,18 @@ public class NoiseRecorder {
 
     private Double computeDecibels(short[] data) {
 
-        double average = 0.0;
+        double sum = 0.0;
         int count = 0;
         for (short s : data) {
             if (s!=0) {
-                average += Math.abs(s);
+                sum += Math.abs(s);
                 count++;
             }
         }
 
-        System.out.println("Data length = " + data.length + " minbuffer: " + minBufferSize + "|" + average + "|" + count);
+        System.out.println("Data length = " + data.length + " minbuffer: " + minBufferSize + "|" + sum + "|" + count);
 
-        double x = average/count;
+        double x = sum/count;
 
         double a = 20*Math.log10(x/32768) + MAX_DB;
 
