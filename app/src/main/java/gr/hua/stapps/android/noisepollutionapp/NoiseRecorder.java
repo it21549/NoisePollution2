@@ -78,7 +78,7 @@ public class NoiseRecorder {
         Log.i(LOG_TAG, "Recorder stopped");
     }
 
-
+    //Function is not used
     public HashMap getNoiseLevelAverage() {
 
         //android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);

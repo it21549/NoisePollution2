@@ -59,4 +59,5 @@ public class Recording {
     public void setLongitude(Double longitude) {
         Longitude = longitude;
     }
+
 }

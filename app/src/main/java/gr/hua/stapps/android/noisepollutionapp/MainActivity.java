@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
-import android.media.AudioRecord;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,6 +24,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -40,7 +41,6 @@ import com.google.firebase.storage.StorageReference;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int LOC_PERM = 1;
     private Handler handler;
     private Recording recording = new Recording(0.0,0.0,0.0);
-
+    private Recording recxz = new Recording(0.0,0.0,0.0);
     private View mLayout;
     double decibels = 0;
     Button rec;
@@ -65,23 +65,31 @@ public class MainActivity extends AppCompatActivity {
     TextView average1;
     double avg1 = 0;
     int counter = 0;
-    Boolean check_run = false; // Value that determines if user asked to stop recording.
-    private Boolean perm = false;
+    //Boolean check_run = false; // Value that determines if user asked to stop recording.
+    private Boolean perm = false; // Permission to record
 
     private StorageReference mStorageRef;
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
 
+    private MyViewModel rec_model;
+    private static DecimalFormat decimalFormat = new DecimalFormat("#.#");
+    final static Integer NOT_REC = 0; //Not recording
+    final static Integer REC = 1; // Recording
+    final static Integer UP_REC = 2; //upload recording
+
     public void setPerm(Boolean perm) {
         this.perm = perm;
     }
 
+
+    //Handling Crash Reports
     private Thread.UncaughtExceptionHandler handleAppCrash = new Thread.UncaughtExceptionHandler() {
         @Override
         public void uncaughtException(Thread thread, Throwable ex) {
-            Log.e("error", ex.toString());
 
+            Log.e("error", ex.toString());
             //Send email
             Intent i = new Intent(Intent.ACTION_SEND);
             i.setType("message/rfc822");
@@ -124,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
         handler = new Handler();
         mStorageRef = FirebaseStorage.getInstance().getReference();
 
+        //Location Request Handling
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
         locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -147,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+        //Request permission to record if it is not already granted
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -164,15 +174,128 @@ public class MainActivity extends AppCompatActivity {
         }).start();
 
 
+        rec_model = new ViewModelProvider(this).get(MyViewModel.class);
+
+        final Observer<Double> rec_observer = new Observer<Double>() {
+
+            @Override
+            public void onChanged(Double aDouble) {
+                if(!aDouble.isNaN()) {
+                    decibels = aDouble.doubleValue();
+                    //Setting live recording value
+                    algorithm1.setText(decimalFormat.format(decibels));
+                    System.out.println("decibels " + decibels + "/" + aDouble.toString());
+
+                    //Setting average live recording value
+                    System.out.println("Counter = " + counter + " avg = " + avg1);
+                    avg1 = (avg1 + decibels);
+                    counter++;
+                    average1.setText(decimalFormat.format(avg1/counter));
+                    average.setVisibility(View.VISIBLE);
+                    tableRow.setVisibility(View.VISIBLE);
+                    recording.setAverageDecibels(avg1/counter);
+                    recording.setCurrentDate(new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date()));
+                    recording.setCurrentTime(new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date()));
+                } else {
+                    System.out.println("double value is nan");
+                }
+            }
+        };
+
+        final Observer<Integer> up_observer= new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer integer) {
+                Log.i("OnLoopChange", "Checking to upload//loop= " + rec_model.getLoop().getValue());
+                if(integer.equals(NOT_REC)) {
+                    if (upload.isChecked() && !recording.getAverageDecibels().equals(0.0)) {
+                        accessLocation();
+                        Log.i("OnLoopChange", "Uploading..");
+                    }
+                    rec.setClickable(true);
+                }
+            }
+        };
+
+        rec_model.getData().observe(this, rec_observer);
+        rec_model.getLoop().observe(this, up_observer);
+        
+
         rec.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                stop.setClickable(true);
+                Log.i("MainActivity", "loop is " + rec_model.getLoop().getValue().toString());
+                if (rec_model.getLoop().getValue().equals(NOT_REC)) { //If not recording
+                    avg1 = 0;
+                    counter = 0;
+
+                    //If permission is granted to record
+                    if (perm) {
+                        Log.d("MainActivity", "running alt rec");
+                        startBackgroundRecording();
+                        rec.setClickable(false);
+                    } else {
+                        Log.d("DEBUG", perm.toString());
+                        requestMicPermission();
+                    }
+                }
+            }
+        });
+
+        stop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rec_model.getLoop().setValue(NOT_REC);
+                stop.setClickable(false);
+               /* if(upload.isChecked())
+                    accessLocation();*/
+            }
+        });
+
+        upload.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+
+                    mFusedLocationClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
+                    locationRequest = LocationRequest.create();
+                    locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+                    locationRequest.setInterval(2 * 1000); // 2 seconds
+
+                    locationCallback = new LocationCallback() {
+                        @Override
+                        public void onLocationResult(LocationResult locationResult) {
+                            super.onLocationResult(locationResult);
+                            if(locationResult ==  null) {
+                                System.out.println("locationResult = null");
+                            }
+                            for(Location location : locationResult.getLocations()) {
+                                if(location !=null) {
+                                    recording.setLatitude(location.getLatitude());
+                                    recording.setLongitude(location.getLongitude());
+                                    //Toast.makeText(MainActivity.this, "Lat:" + recording.getLatitude() + " Lon:" + recording.getLongitude(), Toast.LENGTH_SHORT).show();
+                                    mFusedLocationClient.removeLocationUpdates(locationCallback);
+                                }
+                            }
+                        }
+                    };
+                }
+            }
+        });
+
+        //Record Button
+        /*rec.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //User cannot click 'record' again unless 'stop' button is clicked
                 rec.setClickable(false);
+                //User has asked to start recording (not stop)
                 check_run = false;
                 avg1 = 0;
                 //avg2 = 0;
                 counter = 0;
 
+                //If permission is granted to record
                 if (perm) {
                     Log.d("DEBUG", "running thread");
                     new Thread(new Runnable() {
@@ -236,7 +359,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             });
 
-                            while (Calendar.getInstance().getTimeInMillis() - i <= 10000 && !check_run /*&& permission*/) {
+                            while (Calendar.getInstance().getTimeInMillis() - i <= 10000 && !check_run *//*&& permission*//*) {
                                 try {
                                     Thread.sleep(300);
 
@@ -283,8 +406,20 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             }
-        });
+        });*/
 
+    }
+
+    private void startBackgroundRecording() {
+        Log.i("MainAct/startBackRec", "1st loop has value: " + rec_model.getLoop().getValue());
+        rec_model.getLoop().setValue(REC);
+        Log.i("MainAct/startBackRec", "2nd loop has value: " + rec_model.getLoop().getValue());
+        rec_model.start();
+        Log.i("MainAct/startBackRec","Started backgroundRecording");
+        Log.i("MainAct/startBackRec","model hasObservers: " + rec_model.getData().hasObservers());
+
+        if (tableLayout.getVisibility() == View.INVISIBLE)
+            tableLayout.setVisibility(View.VISIBLE);
     }
 
     @Override
