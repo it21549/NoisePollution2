@@ -14,21 +14,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginLeft="32dp"
         android:layout_marginEnd="32dp"
-        android:layout_marginRight="32dp"
         android:background="#00BCD4"
         android:text="@string/app_title"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.241"
-        tools:layout_editor_absoluteY="32dp" />
+        app:layout_constraintVertical_bias="0.041" />
 
     <Button
         android:id="@+id/record_button"
@@ -36,21 +32,20 @@
         android:layout_height="wrap_content"
         android:text="@string/rec_button"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.226"
+        app:layout_constraintHorizontal_bias="0.253"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.717" />
+        app:layout_constraintVertical_bias="0.376" />
 
     <TableLayout
         android:id="@+id/live_table"
-        android:layout_width="275dp"
-        android:layout_height="183dp"
-        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/record_button"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title">
+        app:layout_constraintTop_toBottomOf="@+id/title">
 
         <TableRow
             android:layout_width="match_parent"
@@ -82,9 +77,9 @@
                 android:id="@+id/live1"
                 android:layout_width="275dp"
                 android:layout_height="20dp"
+                android:layout_gravity="center"
                 android:background="#F0F8FF"
-                android:gravity="center"
-                android:layout_gravity="center"/>
+                android:gravity="center" />
 
             <!--<TextView
                 android:id="@+id/live2"
@@ -98,17 +93,16 @@
         <TableRow
             android:id="@+id/averageTitle"
             android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:visibility="invisible">
+            android:layout_height="10dp">
 
             <TextView
                 android:layout_width="275dp"
                 android:layout_height="20dp"
+                android:layout_gravity="center"
                 android:background="#7FFFD4"
                 android:gravity="center"
                 android:text="@string/avg_header"
-                android:textStyle="bold"
-                android:layout_gravity="center"/>
+                android:textStyle="bold" />
 
             <!--<TextView
                 android:layout_width="137dp"
@@ -122,16 +116,15 @@
         <TableRow
             android:id="@+id/tableRow_avg"
             android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:visibility="invisible">
+            android:layout_height="10dp">
 
             <TextView
                 android:id="@+id/average1"
                 android:layout_width="275dp"
                 android:layout_height="20dp"
+                android:layout_gravity="center"
                 android:background="#F0F8FF"
-                android:gravity="center"
-                android:layout_gravity="center"/>
+                android:gravity="center" />
 
             <!--<TextView
                 android:id="@+id/average2"
@@ -146,28 +139,215 @@
         android:id="@+id/stop_rec"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="invisible"
-        android:text="Stop"
+        android:text="@string/button_stop"
+        app:layout_constraintBottom_toBottomOf="@+id/record_button"
+        app:layout_constraintHorizontal_bias="0.792"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/record_button"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <Switch
+        android:id="@+id/switch_advanced"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/switch_advanced"
+        android:textOff="@string/switch_off"
+        android:textOn="@string/switch_on"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.73"
+        app:layout_constraintEnd_toStartOf="@+id/stop_rec"
+        app:layout_constraintHorizontal_bias="0.492"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.717" />
+        app:layout_constraintVertical_bias="0.463" />
 
-    <Switch
-        android:id="@+id/upload"
+    <TableLayout
+        android:id="@+id/userInfoTable"
+        android:layout_width="382dp"
+        android:layout_height="240dp"
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/switch_advanced">
+
+        <TableRow
+            android:id="@+id/tableRow_info_1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <RadioGroup
+                android:id="@+id/radioGroup_gender"
+                android:layout_width="191dp"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="#EDD9D9"
+                    android:text="@string/gender_title"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="#000000"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <RadioButton
+                    android:id="@+id/radioMale"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="start"
+                    android:layout_weight="1"
+                    android:checked="false"
+                    android:text="@string/gender_male"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/radioFem"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="start"
+                    android:layout_weight="1"
+                    android:checked="false"
+                    android:text="@string/gender_female"
+                    android:textSize="12sp" />
+
+                <RadioButton
+                    android:id="@+id/radioOther"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="start"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:text="@string/gender_other"
+                    android:textSize="12sp" />
+            </RadioGroup>
+
+            <RadioGroup
+                android:id="@+id/radioGroup_NoiseType"
+                android:layout_width="191dp"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="#EDD9D9"
+                    android:text="@string/title_NoiseType"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="#000000"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/editTextNoiseTypeAnth"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:inputType="numberDecimal"
+                    android:hint="@string/noiseType_anth"
+                    android:textAlignment="center"
+                    android:textSize="12sp" />
+
+                <EditText
+                    android:id="@+id/editTextNoiseTypeNat"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:inputType="numberDecimal"
+                    android:hint="@string/noise_type_nat"
+                    android:textAlignment="center"
+                    android:textSize="12sp" />
+
+                <EditText
+                    android:id="@+id/editTextNoiseTypeTec"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:inputType="numberDecimal"
+                    android:hint="@string/noise_type_tec"
+                    android:textAlignment="center"
+                    android:textSize="12sp" />
+
+
+            </RadioGroup>
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/textViewAge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#EDD9D9"
+                android:text="@string/title_age"
+                android:textAlignment="center"
+                android:textColor="#000000"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textView_perception"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#EDD9D9"
+                android:text="@string/title_perception"
+                android:textAlignment="center"
+                android:textColor="#000000"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <EditText
+                android:id="@+id/editTextAge"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:inputType="numberDecimal"
+                android:hint="@string/editText_AgeScale"
+                android:textAlignment="center"
+                android:textSize="12sp" />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/spinner_perception"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </androidx.appcompat.widget.AppCompatSpinner>
+        </TableRow>
+    </TableLayout>
+
+    <Button
+        android:id="@+id/upload_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Upload:"
-        android:textOff="OFF"
-        android:textOn ="ON"
+        android:fontFamily="sans-serif-black"
+        android:text="@string/button_upload"
+        android:textAllCaps="false"
+        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.889" />
+        app:layout_constraintTop_toBottomOf="@+id/userInfoTable"
+        app:layout_constraintVertical_bias="0.483"
+        android:visibility="invisible"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

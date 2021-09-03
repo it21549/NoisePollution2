@@ -12,4 +12,33 @@
     <string name="acra_toast_text">Report has been sent to developer.</string>
     <string name="live_db1">Live Decibel Values</string>
     <string name="local_service_started">12345</string>
+    <string name="gender_title">Gender </string>
+    <string name="gender_male">Male </string>
+    <string name="gender_female">Female </string>
+    <string name="gender_other">Other </string>
+    <string name="title_age">Age</string>
+    <string name="title_NoiseType"> Noise Source </string>
+    <string name="noiseType_anth">Anthropogenic </string>
+    <string name="editText_NoiseScale">(e.g. 10, 100)</string>
+    <string name="editText_AgeScale">(e.g. 24, 51)</string>
+    <string name="noise_type_nat">Natural</string>
+    <string name="noise_type_tec">Technological</string>
+    <string name="title_noise_scale">Noise Scale</string>
+    <string name="button_stop">Stop</string>
+    <string name="button_upload">Upload</string>
+    <string name="switch_off">OFF</string>
+    <string name="switch_on">ON</string>
+    <string name="switch_advanced">Advanced</string>
+    <string name="title_perception">User Perception</string>
+    <string-array name="user_perception">
+        <item>absolute silence</item>
+        <item>extremely quiet</item>
+        <item>very quiet</item>
+        <item>quiet</item>
+        <item>moderate</item>
+        <item>somewhat noisy</item>
+        <item>noisy</item>
+        <item>very noisy</item>
+        <item>extremely noisy</item>
+    </string-array>
 </resources>
