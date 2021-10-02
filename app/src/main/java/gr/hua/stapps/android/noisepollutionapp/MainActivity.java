@@ -112,8 +112,8 @@ public class MainActivity extends AppCompatActivity {
 
     private RequestQueue mRequestQueue;
     private StringRequest mStringRequest;
-    private String url = "http://10.100.59.187:3000";
-
+    //private String url = "http://10.100.59.187:3000";
+    private String url = "http://83.212.240.46";
     public void setPerm(Boolean perm) {
         this.perm = perm;
     }
