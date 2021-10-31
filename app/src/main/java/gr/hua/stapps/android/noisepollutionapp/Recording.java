@@ -22,7 +22,8 @@ public class Recording {
         AverageDecibels = averageDecibels;
         Latitude = latitude;
         Longitude = longitude;
-        currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+        //currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+        currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
         currentTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
         Gender = gender;
         Age = age;
