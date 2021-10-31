@@ -285,7 +285,8 @@ public class MainActivity extends AppCompatActivity {
                     average.setVisibility(View.VISIBLE);
                     //tableRow.setVisibility(View.VISIBLE);
                     recording.setAverageDecibels(avg1/counter);
-                    recording.setCurrentDate(new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date()));
+                    //recording.setCurrentDate(new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date()));
+                    recording.setCurrentDate(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date()));
                     recording.setCurrentTime(new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date()));
                 } else {
                     System.out.println("double value is nan");
