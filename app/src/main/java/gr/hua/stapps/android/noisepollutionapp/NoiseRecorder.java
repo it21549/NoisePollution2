@@ -1,11 +1,17 @@
 package gr.hua.stapps.android.noisepollutionapp;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.util.Log;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Timer;
@@ -14,23 +20,11 @@ import java.util.TimerTask;
 public class NoiseRecorder {
     private static final String LOG_TAG = "NoiseRecorder";
     private static final String BRAND = Build.BRAND;
-
-    public void setREC_TIME(long REC_TIME) {
-        this.REC_TIME = REC_TIME;
-    }
-
-    public void setBUF(int BUF) {
-        this.BUF = BUF;
-    }
-
-    public int BUF = 120;
-    public long REC_TIME = 10000;
-    public static double reference = 0.00002;
     public static int MAX_DB = 95;
     public AudioRecord recorder;
     private int minBufferSize;
 
-
+    @SuppressLint("MissingPermission")
     public NoiseRecorder() {
         minBufferSize = AudioRecord.getMinBufferSize(44100, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
         recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, 44100, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, minBufferSize);
@@ -49,7 +43,7 @@ public class NoiseRecorder {
         System.out.println("Time started " + Calendar.getInstance().getTimeInMillis());
         int read_error = recorder.read(data, 0, data.length);
         System.out.println("Time stopped " + Calendar.getInstance().getTimeInMillis());
-        System.out.println(read_error);
+        System.out.println("read error:" + read_error);
         return computeDecibels(data);
     }
 
@@ -63,79 +57,59 @@ public class NoiseRecorder {
                 count++;
             }
         }
-
+        printBufferSamples(data);
         System.out.println("Data length = " + data.length + " minbuffer: " + minBufferSize + "|" + sum + "|" + count);
 
         double x = sum/count;
-
+        //dB calculation
         double a = 20*Math.log10(x/32768) + MAX_DB;
 
         return a;
     }
+
+    private void printBufferSamples(short[] data) {
+        for (int i = 0; i< data.length; i++) {
+            if (i<500) {
+                System.out.print(data[i]+" ");
+                if (i==499)
+                    System.out.println("-------------------1--------------------");
+            }
+            else if (i<1000) {
+                System.out.print(data[i]+" ");
+                if (i==999)
+                    System.out.println("-------------------2--------------------");
+            } else if (i<1500) {
+                System.out.print(data[i] + " ");
+                if (i == 1499)
+                    System.out.println("-------------------3--------------------");
+            } else if (i<2000){
+                System.out.print(data[i] + " ");
+                if (i == 1999)
+                    System.out.println("-------------------4--------------------");
+            } else if (i<2500){
+                System.out.print(data[i] + " ");
+                if (i == 2499)
+                    System.out.println("-------------------5--------------------");
+            } else if (i<3000){
+                System.out.print(data[i] + " ");
+                if (i == 2999)
+                    System.out.println("-------------------6--------------------");
+            } else if (i<3500){
+                System.out.print(data[i] + " ");
+                if (i == 3499)
+                    System.out.println("-------------------7--------------------");
+            } else if (i<4000){
+                System.out.print(data[i] + " ");
+                if (i > 3580)
+                    System.out.println("-------------------8--------------------");
+            }
+            System.out.println("-------------------9--------------------");
+        }
+    }
+
     public void stopRec() {
         recorder.stop();
         recorder.release();
         Log.i(LOG_TAG, "Recorder stopped");
-    }
-
-    //Function is not used
-    public HashMap getNoiseLevelAverage() {
-
-        //android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_AUDIO);
-
-        HashMap<String, Double> results = new HashMap<>();
-        int minBufferSize = AudioRecord.getMinBufferSize(44100, AudioFormat.CHANNEL_IN_DEFAULT, AudioFormat.ENCODING_PCM_16BIT);
-
-        //Increasing buffer size from 1 to 10 seconds
-        int bufferSize = minBufferSize*BUF;
-        final AudioRecord recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, 44100, AudioFormat.CHANNEL_IN_DEFAULT, AudioFormat.ENCODING_PCM_16BIT, bufferSize);
-
-        short[] data = new short[bufferSize];
-        double average = 0.0;
-        recorder.startRecording();
-        System.out.println("Time started " + Calendar.getInstance().getTimeInMillis());
-        //Recording data
-        recorder.read(data, 0, bufferSize);
-        double max = 0.0;
-        Timer tm = new Timer();
-        tm.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                recorder.stop();
-                recorder.release();
-            }
-        }, REC_TIME);
-        System.out.println("Time stopped " + Calendar.getInstance().getTimeInMillis());
-        int count = 0;
-        for(short s : data) {
-            if(s!=0) {
-                average += Math.abs(s);
-            }else {
-                bufferSize--;
-            }
-            //Log.e("short_array", String.valueOf(s));
-            if(s> max)
-                max = s;
-        }
-        System.out.println("Data length = " + data.length + "minbuffer: " + minBufferSize + "|" + bufferSize + "|" + count);
-        double x = average/bufferSize;
-        //double x=average;
-        //Stathis Algorithm
-        double a = 20*Math.log10(x/32768) + MAX_DB;
-        double m = 20*Math.log10(max/32768) + MAX_DB;
-        results.put("Average", a);
-        results.put("Maximum", m);
-
-        double dba;
-        double dbm;
-        //Calculating the Pascal pressure based in the idea that the max amplitude (between 0 and 32767) is relative to the pressure
-
-        double pressureA = x/51805.5336; //the value 51805.5336 can be derived from assuming that x=32767 -> 0.6325 Pa and x=1 -> 0.00002 Pa
-        double pressureM = max/51805.5336;
-        dba = (20*Math.log10(pressureA/reference));
-        dbm = (20*Math.log10(pressureM/reference));
-        results.put("Algorithm 1 Average", dba);
-        results.put("Algorithm 2 Maximum", dbm);
-        return results;
     }
 }

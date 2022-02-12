@@ -4,13 +4,14 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class MyViewModel extends ViewModel {
+public class NoisePollutionViewModel extends ViewModel {
 
     private backgroundRecording task = new backgroundRecording();
-
     private LiveData<Double> data;
     private MutableLiveData<Integer> loop;
 
+
+    //Start recording
     public void start() {
         System.out.println("ViewModel started");
         task.start();
