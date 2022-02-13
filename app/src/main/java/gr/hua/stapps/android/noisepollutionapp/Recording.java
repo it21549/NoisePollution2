@@ -6,11 +6,11 @@ import java.util.Locale;
 
 public class Recording {
 
-    private Double averageDecibels;
+    private Double decibels;
     private Double latitude;
     private Double longitude;
-    private String currentDate;
-    private String currentTime;
+    private String date;
+    private String time;
     private Integer gender;
     private Integer age;
     private Integer anthropogenic;
@@ -18,26 +18,12 @@ public class Recording {
     private Integer technological;
     private Integer perception;
 
-    public Recording(Double averageDecibels, Double latitude, Double longitude, Integer gender, Integer age, Integer anthropogenic, Integer natural, Integer technological, Integer perception) {
-        this.averageDecibels = averageDecibels;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        //currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
-        currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-        currentTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
-        this.gender = gender;
-        this.age = age;
-        this.anthropogenic = anthropogenic;
-        this.natural = natural;
-        this.technological = technological;
-        this.perception = perception;
-    }
     public Recording() {
-        averageDecibels = 0.0;
+        decibels = 0.0;
         latitude = 0.0;
         longitude = 0.0;
-        currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-        currentTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+        date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        time = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
         gender = 2;
         age = 0;
         anthropogenic = 0;
@@ -46,28 +32,28 @@ public class Recording {
         perception = 0;
     }
 
-    public String getCurrentDate() {
-        return currentDate;
+    public String getDate() {
+        return date;
     }
 
-    public void setCurrentDate(String currentDate) {
-        this.currentDate = currentDate;
+    public void setDate(String date) {
+        this.date = date;
     }
 
-    public String getCurrentTime() {
-        return currentTime;
+    public String getTime() {
+        return time;
     }
 
-    public void setCurrentTime(String currentTime) {
-        this.currentTime = currentTime;
+    public void setTime(String time) {
+        this.time = time;
     }
 
-    public Double getAverageDecibels() {
-        return averageDecibels;
+    public Double getDecibels() {
+        return decibels;
     }
 
-    public void setAverageDecibels(Double averageDecibels) {
-        this.averageDecibels = averageDecibels;
+    public void setDecibels(Double decibels) {
+        this.decibels = decibels;
     }
 
     public Double getLatitude() {

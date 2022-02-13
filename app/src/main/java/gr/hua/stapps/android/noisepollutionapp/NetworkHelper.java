@@ -57,27 +57,21 @@ public class NetworkHelper {
         postData = new JSONObject();
         jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.POST, url.concat("/noise"), postData,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.i("Post Response", response.toString());
-                        try {
-                            Toast.makeText(context, response.get("Response").toString(), Toast.LENGTH_SHORT).show();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                response -> {
+                    Log.i("Post Response", response.toString());
+                    try {
+                        Toast.makeText(context, response.get("Response").toString(), Toast.LENGTH_SHORT).show();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-//                error.printStackTrace();
-//                Log.wtf("Error posting", error);
-                Toast.makeText(context, "Upload to remote server was unsuccessful, try again later", Toast.LENGTH_SHORT).show();
-            }
-        }
+                }, error -> {
+    //                error.printStackTrace();
+                    Log.wtf("Error posting", error);
+                    Toast.makeText(context, "Upload to remote server was unsuccessful, try again later", Toast.LENGTH_SHORT).show();
+                }
         ) {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
+            public Map<String, String> getHeaders() {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json; charset=utf-8");
                 return headers;
@@ -93,8 +87,8 @@ public class NetworkHelper {
         try {
             postData.put("lon", recording.getLongitude());
             postData.put("lat", recording.getLatitude());
-            postData.put("dec", recording.getAverageDecibels());
-            postData.put("tim", (recording.getCurrentDate() + " " + recording.getCurrentTime()) );
+            postData.put("dec", recording.getDecibels());
+            postData.put("tim", (recording.getDate() + " " + recording.getTime()) );
             postData.put("gen", recording.getGender());
             postData.put("age", recording.getAge());
             postData.put("ant", recording.getAnthropogenic());

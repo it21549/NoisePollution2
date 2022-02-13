@@ -20,7 +20,7 @@ import java.util.TimerTask;
 public class NoiseRecorder {
     private static final String LOG_TAG = "NoiseRecorder";
     private static final String BRAND = Build.BRAND;
-    public static int MAX_DB = 95;
+    public static int MAX_DB = 110;
     public AudioRecord recorder;
     private int minBufferSize;
 
@@ -30,12 +30,12 @@ public class NoiseRecorder {
         recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, 44100, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, minBufferSize);
         recorder.startRecording();
         Log.i(LOG_TAG, "Recorder created");
-        if(BRAND.contains("samsung"))
+        /*if(BRAND.contains("samsung"))
             MAX_DB = 95 + 4;
         else if (BRAND.contains("Xiaomi"))
             MAX_DB = 95 + 10;
         else
-            MAX_DB = 95 + 9;
+            MAX_DB = 95 + 9;*/
     }
 
     public Double startRec() {
@@ -48,22 +48,10 @@ public class NoiseRecorder {
     }
 
     private Double computeDecibels(short[] data) {
-
-        double sum = 0.0;
-        int count = 0;
-        for (short s : data) {
-            if (s!=0) {
-                sum += Math.abs(s);
-                count++;
-            }
-        }
-        printBufferSamples(data);
-        System.out.println("Data length = " + data.length + " minbuffer: " + minBufferSize + "|" + sum + "|" + count);
-
-        double x = sum/count;
+        //printBufferSamples(data);
+        System.out.println("Data length = " + data.length + " minbuffer: " + minBufferSize);
         //dB calculation
-        double a = 20*Math.log10(x/32768) + MAX_DB;
-
+        double a = Utils.calculateAvg(data, 32768, MAX_DB);
         return a;
     }
 

@@ -10,7 +10,7 @@
     <string name="avg_header">Average Decibel Values</string>
     <string name="alt_avg_header">Average 2</string>
     <string name="acra_toast_text">Report has been sent to developer.</string>
-    <string name="live_db1">Live Decibel Values</string>
+    <string name="live_db">Live Decibel Values</string>
     <string name="local_service_started">12345</string>
     <string name="gender_title">Gender </string>
     <string name="gender_male">Male </string>
