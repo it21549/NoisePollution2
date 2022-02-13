@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="margin_32dp">32dp</dimen>
+    <dimen name="title_row_height_20dp">20dp</dimen>
+    <dimen name="live_row_width_275dp">275dp</dimen>
+    <dimen name="info_table_width_382dp">382dp</dimen>
+    <dimen name="info_table_height_240dp">240dp</dimen>
+    <dimen name="margin_30dp">30dp</dimen>
+    <dimen name="text_size_14sp">14sp</dimen>
+    <dimen name="radioGroup_width_191dp">191dp</dimen>
+</resources>

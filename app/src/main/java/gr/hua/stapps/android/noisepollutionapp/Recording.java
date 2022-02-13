@@ -6,118 +6,117 @@ import java.util.Locale;
 
 public class Recording {
 
-    private Double AverageDecibels;
-    private Double Latitude;
-    private Double Longitude;
-    private String currentDate;
-    private String currentTime;
-    private Integer Gender;
-    private Integer Age;
-    private Integer Anthropogenic;
-    private Integer Natural;
-    private Integer Technological;
-    private Integer Perception;
+    private Double decibels;
+    private Double latitude;
+    private Double longitude;
+    private String date;
+    private String time;
+    private Integer gender;
+    private Integer age;
+    private Integer anthropogenic;
+    private Integer natural;
+    private Integer technological;
+    private Integer perception;
 
-    public Recording(Double averageDecibels, Double latitude, Double longitude, Integer gender, Integer age, Integer anthropogenic, Integer natural, Integer technological, Integer perception) {
-        AverageDecibels = averageDecibels;
-        Latitude = latitude;
-        Longitude = longitude;
-        //currentDate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
-        currentDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-        currentTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
-        Gender = gender;
-        Age = age;
-        Anthropogenic = anthropogenic;
-        Natural = natural;
-        Technological = technological;
-        Perception = perception;
+    public Recording() {
+        decibels = 0.0;
+        latitude = 0.0;
+        longitude = 0.0;
+        date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        time = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+        gender = 2;
+        age = 0;
+        anthropogenic = 0;
+        natural = 0;
+        technological = 0;
+        perception = 0;
     }
 
-    public String getCurrentDate() {
-        return currentDate;
+    public String getDate() {
+        return date;
     }
 
-    public void setCurrentDate(String currentDate) {
-        this.currentDate = currentDate;
+    public void setDate(String date) {
+        this.date = date;
     }
 
-    public String getCurrentTime() {
-        return currentTime;
+    public String getTime() {
+        return time;
     }
 
-    public void setCurrentTime(String currentTime) {
-        this.currentTime = currentTime;
+    public void setTime(String time) {
+        this.time = time;
     }
 
-    public Double getAverageDecibels() {
-        return AverageDecibels;
+    public Double getDecibels() {
+        return decibels;
     }
 
-    public void setAverageDecibels(Double averageDecibels) {
-        AverageDecibels = averageDecibels;
+    public void setDecibels(Double decibels) {
+        this.decibels = decibels;
     }
 
     public Double getLatitude() {
-        return Latitude;
+        return latitude;
     }
 
     public void setLatitude(Double latitude) {
-        Latitude = latitude;
+        this.latitude = latitude;
     }
 
     public Double getLongitude() {
-        return Longitude;
+        return longitude;
     }
 
     public void setLongitude(Double longitude) {
-        Longitude = longitude;
+        this.longitude = longitude;
     }
 
     public Integer getGender() {
-        return Gender;
+        return gender;
     }
 
     public void setGender(Integer gender) {
-        Gender = gender;
+        this.gender = gender;
     }
 
     public Integer getAnthropogenic() {
-        return Anthropogenic;
+        return anthropogenic;
     }
 
     public void setAnthropogenic(Integer anthropogenic) {
-        Anthropogenic = anthropogenic;
+        this.anthropogenic = anthropogenic;
     }
 
     public Integer getNatural() {
-        return Natural;
+        return natural;
     }
 
     public void setNatural(Integer natural) {
-        Natural = natural;
+        this.natural = natural;
     }
 
     public Integer getTechnological() {
-        return Technological;
+        return technological;
     }
 
     public void setTechnological(Integer technological) {
-        Technological = technological;
+        this.technological = technological;
     }
 
     public Integer getPerception() {
-        return Perception;
+        return perception;
     }
 
     public void setPerception(Integer perception) {
-        Perception = perception;
+        this.perception = perception;
     }
 
     public Integer getAge() {
-        return Age;
+        return age;
     }
 
     public void setAge(Integer age) {
-        Age = age;
+        this.age = age;
     }
 }

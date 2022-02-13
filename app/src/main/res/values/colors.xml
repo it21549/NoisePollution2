@@ -3,4 +3,9 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
+    <color name="veraman_title">#00BCD4</color>
+    <color name="turquoise">#7FFFD4</color>
+    <color name="white_decibel_background">#F0F8FF</color>
+    <color name="pink_user_info_title">#EDD9D9</color>
+    <color name="black_text">#000000</color>
 </resources>
