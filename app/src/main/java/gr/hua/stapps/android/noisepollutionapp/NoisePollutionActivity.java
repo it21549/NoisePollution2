@@ -30,12 +30,12 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.text.DecimalFormat;
 
-import gr.hua.stapps.android.noisepollutionapp.databinding.ActivityMainBinding;
+import gr.hua.stapps.android.noisepollutionapp.databinding.NoisePollutionActivityBinding;
 
 
 public class NoisePollutionActivity extends AppCompatActivity {
 
-    private ActivityMainBinding binding;
+    private NoisePollutionActivityBinding binding;
     private NoisePollutionViewModel rec_model;
     //Handler in case of app crash
     private Thread.UncaughtExceptionHandler appCrashHandler = new AppCrashHandler(this);
@@ -56,14 +56,13 @@ public class NoisePollutionActivity extends AppCompatActivity {
 
     private static DecimalFormat decimalFormat = new DecimalFormat("#.#");
     final static Integer IS_NOT_RECORDING = 0; //Not recording
-    final static Integer IS_RECORDING = 1; // Recording
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        binding = NoisePollutionActivityBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         //Provide ViewModel
@@ -343,6 +342,6 @@ public class NoisePollutionActivity extends AppCompatActivity {
         hasBeenUploadedUploaded = true;
         NetworkHelper networkHelper = new NetworkHelper(NoisePollutionActivity.this);
         networkHelper.uploadToFirebase(rec_model.recording);
-        //networkHelper.uploadToPostgreSQL(recording);
+        networkHelper.uploadToPostgreSQL(rec_model.recording);
     }
 }
