@@ -34,11 +34,12 @@ public class NetworkHelper {
     private final DatabaseReference databaseReference;
     private final RequestQueue requestQueue;
     private final JSONObject postData;
-    private final JsonObjectRequest jsonObjectRequest;
+    private final Context context;
     private final DatabaseReference.CompletionListener resultListener;
 
 
     public NetworkHelper(Context context) {
+        this.context = context;
         //Firebase Initialization
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference().child(childOf);
@@ -55,28 +56,6 @@ public class NetworkHelper {
         //PostgreSQL server initialization
         requestQueue = Volley.newRequestQueue(context);
         postData = new JSONObject();
-        jsonObjectRequest = new JsonObjectRequest(
-                Request.Method.POST, url.concat("/noise"), postData,
-                response -> {
-                    Log.i("Post Response", response.toString());
-                    try {
-                        Toast.makeText(context, response.get("Response").toString(), Toast.LENGTH_SHORT).show();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }, error -> {
-    //                error.printStackTrace();
-                    Log.wtf("Error posting", error);
-                    Toast.makeText(context, "Upload to remote server was unsuccessful, try again later", Toast.LENGTH_SHORT).show();
-                }
-        ) {
-            @Override
-            public Map<String, String> getHeaders() {
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Content-Type", "application/json; charset=utf-8");
-                return headers;
-            }
-        };
     }
 
     public void uploadToFirebase(Recording recording) {
@@ -98,6 +77,28 @@ public class NetworkHelper {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        requestQueue.add(jsonObjectRequest);
+        requestQueue.add(
+                new JsonObjectRequest(
+                        Request.Method.POST, url.concat("/noise"), postData,
+                        response -> {
+                            Log.i("Post Response", response.toString());
+                            try {
+                                Toast.makeText(context, response.get("Response").toString(), Toast.LENGTH_SHORT).show();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }, error -> {
+                    //                error.printStackTrace();
+                    Log.wtf("Error posting", error);
+                    Toast.makeText(context, "Upload to remote server was unsuccessful, try again later", Toast.LENGTH_SHORT).show();
+                }
+                ) {
+                    @Override
+                    public Map<String, String> getHeaders() {
+                        Map<String, String> headers = new HashMap<>();
+                        headers.put("Content-Type", "application/json; charset=utf-8");
+                        return headers;
+                    }
+                });
     }
 }
