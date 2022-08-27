@@ -34,7 +34,7 @@ public class NoisePollutionViewModel extends ViewModel {
 
     public void setLocationData(Double longitude, Double latitude) {
         recording.setLongitude(longitude);
-        recording.setLatitude(longitude);
+        recording.setLatitude(latitude);
     }
 
     public void setDateTime() {
