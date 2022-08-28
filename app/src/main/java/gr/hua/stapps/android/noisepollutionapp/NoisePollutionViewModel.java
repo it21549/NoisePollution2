@@ -32,7 +32,7 @@ public class NoisePollutionViewModel extends ViewModel {
         return recording.getDecibels();
     }
 
-    public void setLocationData(Double longitude, Double latitude) {
+    public void setLocationData(Double latitude, Double longitude) {
         recording.setLongitude(longitude);
         recording.setLatitude(latitude);
     }
