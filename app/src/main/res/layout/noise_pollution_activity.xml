@@ -30,8 +30,8 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/title">
 
-        <TableRow
-            android:layout_width="match_parent">
+        <TableRow android:layout_width="match_parent">
+
             <TextView
                 android:layout_width="@dimen/live_row_width_275dp"
                 android:layout_height="@dimen/title_row_height_20dp"
@@ -42,8 +42,8 @@
                 android:textStyle="bold" />
         </TableRow>
 
-        <TableRow
-            android:layout_width="match_parent">
+        <TableRow android:layout_width="match_parent">
+
             <TextView
                 android:id="@+id/liveDecibels"
                 android:layout_width="@dimen/live_row_width_275dp"
@@ -53,8 +53,8 @@
                 android:gravity="center" />
         </TableRow>
 
-        <TableRow
-            android:layout_width="match_parent">
+        <TableRow android:layout_width="match_parent">
+
             <TextView
                 android:layout_width="@dimen/live_row_width_275dp"
                 android:layout_height="@dimen/title_row_height_20dp"
@@ -65,8 +65,8 @@
                 android:textStyle="bold" />
         </TableRow>
 
-        <TableRow
-            android:layout_width="match_parent">
+        <TableRow android:layout_width="match_parent">
+
             <TextView
                 android:id="@+id/averageDecibels"
                 android:layout_width="@dimen/live_row_width_275dp"
@@ -82,10 +82,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/rec_button"
+        app:layout_constraintBottom_toTopOf="@+id/switch_advanced"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/stop_rec"
-        app:layout_constraintTop_toBottomOf="@+id/live_table"
-        app:layout_constraintBottom_toTopOf="@+id/switch_advanced"/>
+        app:layout_constraintTop_toBottomOf="@+id/live_table" />
 
     <Button
         android:id="@+id/stop_rec"
@@ -106,10 +106,10 @@
         android:textOff="@string/switch_off"
         android:textOn="@string/switch_on"
         android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/userInfoTable"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/stop_rec"
-        app:layout_constraintBottom_toTopOf="@+id/userInfoTable"/>
+        app:layout_constraintTop_toBottomOf="@id/stop_rec" />
 
     <TableLayout
         android:id="@+id/userInfoTable"
@@ -118,10 +118,10 @@
         android:layout_marginTop="@dimen/margin_30dp"
         android:gravity="center"
         android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@id/upload_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/switch_advanced"
-        app:layout_constraintBottom_toTopOf="@id/upload_button">
+        app:layout_constraintTop_toBottomOf="@+id/switch_advanced">
 
         <TableRow
             android:layout_width="match_parent"
@@ -198,8 +198,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:inputType="numberDecimal"
                     android:hint="@string/noiseType_anth"
+                    android:inputType="numberDecimal"
                     android:textAlignment="center"
                     android:textSize="@dimen/text_size_14sp" />
 
@@ -208,8 +208,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:inputType="numberDecimal"
                     android:hint="@string/noise_type_nat"
+                    android:inputType="numberDecimal"
                     android:textAlignment="center"
                     android:textSize="@dimen/text_size_14sp" />
 
@@ -218,8 +218,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:inputType="numberDecimal"
                     android:hint="@string/noise_type_tec"
+                    android:inputType="numberDecimal"
                     android:textAlignment="center"
                     android:textSize="@dimen/text_size_14sp" />
             </RadioGroup>
@@ -266,16 +266,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:inputType="numberDecimal"
                 android:hint="@string/editText_AgeScale"
+                android:inputType="numberDecimal"
                 android:textAlignment="center"
                 android:textSize="@dimen/text_size_14sp" />
 
             <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/spinner_perception"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-            </androidx.appcompat.widget.AppCompatSpinner>
+                android:layout_height="match_parent"></androidx.appcompat.widget.AppCompatSpinner>
         </TableRow>
     </TableLayout>
 
@@ -287,11 +286,24 @@
         android:text="@string/button_upload"
         android:textAllCaps="false"
         android:textSize="16sp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/userInfoTable"
-        android:visibility="invisible"/>
+        app:layout_constraintTop_toBottomOf="@+id/userInfoTable" />
+
+    <Button
+        android:id="@+id/calibrate_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:text="@string/calibrate_button"
+        android:textAllCaps="false"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/userInfoTable"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/switch_advanced" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

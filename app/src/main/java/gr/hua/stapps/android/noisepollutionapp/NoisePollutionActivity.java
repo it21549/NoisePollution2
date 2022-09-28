@@ -3,7 +3,12 @@ package gr.hua.stapps.android.noisepollutionapp;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -45,18 +50,47 @@ public class NoisePollutionActivity extends AppCompatActivity {
     private LocationCallback locationCallback;
     // Permission to record
     private Boolean permissionToRecordGranted = false;
+
     public void setPermissionToRecordGranted(Boolean permissionToRecordGranted) {
         this.permissionToRecordGranted = permissionToRecordGranted;
     }
 
     private static final int RECORDING_PERMISSION = 0;
     private static final int LOCATION_PERMISSION = 1;
+    private static final int REQUEST_ENABLE_BLUETOOTH = 100;
+    private static final String LOG_INTRO = "NoisePollutionActivity: ";
+
+    // Create a BroadcastReceiver for ACTION_FOUND.
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                // Discovery has found a device. Get the BluetoothDevice
+                // object and its info from the Intent.
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                if (ActivityCompat.checkSelfPermission(NoisePollutionActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    System.out.println(LOG_INTRO + " fuckin hell");
+                    return;
+                }
+                String deviceName = device.getName();
+                String deviceHardwareAddress = device.getAddress(); //MAC address
+                System.out.println(LOG_INTRO  + "deviceName= " + deviceName + " and mac= " + deviceHardwareAddress);
+            }
+        }
+    };
 
     boolean hasBeenUploadedUploaded;
 
     private static DecimalFormat decimalFormat = new DecimalFormat("#.#");
     final static Integer IS_NOT_RECORDING = 0; //Not recording
-
 
 
     @Override
@@ -65,6 +99,9 @@ public class NoisePollutionActivity extends AppCompatActivity {
         binding = NoisePollutionActivityBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        // Register for broadcasts when a device is discovered.
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        registerReceiver(receiver, filter);
         //Provide ViewModel
         rec_model = new ViewModelProvider(this).get(NoisePollutionViewModel.class);
 
@@ -90,6 +127,24 @@ public class NoisePollutionActivity extends AppCompatActivity {
             }
         });
 
+        //Calibration
+        binding.calibrateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Use this check to determine whether Bluetooth classic is supported on the device.
+                // Then you can selectively disable BLE-related features.
+                if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) {
+                    Toast.makeText(NoisePollutionActivity.this, "R.string.bluetooth_not_supported", Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
+                    if (ActivityCompat.checkSelfPermission(NoisePollutionActivity.this, Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED) {
+                        rec_model.initializeContext(NoisePollutionActivity.this);
+                    } else
+                        Toast.makeText(NoisePollutionActivity.this, "permission for bluetooth not granted", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
         //Location Request Handling
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(NoisePollutionActivity.this);
         locationRequest = LocationRequest.create();
@@ -99,11 +154,11 @@ public class NoisePollutionActivity extends AppCompatActivity {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 super.onLocationResult(locationResult);
-                if(locationResult ==  null) {
+                if (locationResult == null) {
                     Log.wtf("locationCallback", "locationResult = null");
                 }
-                for(Location location : locationResult.getLocations()) {
-                    if(location !=null) {
+                for (Location location : locationResult.getLocations()) {
+                    if (location != null) {
                         rec_model.setLocationData(location.getLatitude(), location.getLongitude());
                         mFusedLocationClient.removeLocationUpdates(locationCallback);
                     }
@@ -128,7 +183,7 @@ public class NoisePollutionActivity extends AppCompatActivity {
 
 
         final Observer<Double> rec_observer = decibels -> {
-            if(!decibels.isNaN()) {
+            if (!decibels.isNaN()) {
                 //Setting live recording value
                 binding.liveDecibels.setText(decimalFormat.format(decibels));
                 rec_model.recording.setDecibels(decibels);
@@ -140,17 +195,30 @@ public class NoisePollutionActivity extends AppCompatActivity {
             }
         };
 
-        final Observer<Integer> up_observer= integer -> {
-            if(integer.equals(IS_NOT_RECORDING)) {
+        final Observer<Integer> up_observer = integer -> {
+            if (integer.equals(IS_NOT_RECORDING)) {
                 binding.stopRec.setClickable(false);
                 binding.recordButton.setClickable(true);
                 rec_model.recordings.clear();
             }
         };
+        final Observer<Boolean> calibration_observer = isBtEnabled -> {
+            if (isBtEnabled != null) {
+                if (isBtEnabled) {
+                    System.out.println(LOG_INTRO + "bluetooth is enabled");
+                    rec_model.calibrate();
+                } else {
+                    System.out.println(LOG_INTRO + "will ask for bluetooth to be enabled");
+                    Intent enableBluetoothIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                    startActivityForResult(enableBluetoothIntent, REQUEST_ENABLE_BLUETOOTH);
+                }
+            } else
+                System.out.println(LOG_INTRO + "isBtEnabled is null");
+        };
 
         rec_model.getData().observe(this, rec_observer);
         rec_model.getLoop().observe(this, up_observer);
-        
+        rec_model.getIsBtEnabled().observe(this, calibration_observer);
 
         binding.recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -244,14 +312,14 @@ public class NoisePollutionActivity extends AppCompatActivity {
                 else {
                     accessLocation();
                 }
-            } else if(hasBeenUploadedUploaded)
+            } else if (hasBeenUploadedUploaded)
                 Toast.makeText(NoisePollutionActivity.this, "You have already uploaded, make a new recording to upload!", Toast.LENGTH_SHORT).show();
             else
                 Toast.makeText(NoisePollutionActivity.this, "You cannot upload while recording!", Toast.LENGTH_SHORT).show();
         });
 
         binding.switchAdvanced.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if(isChecked) {
+            if (isChecked) {
                 binding.userInfoTable.setVisibility(View.VISIBLE);
                 binding.uploadButton.setVisibility(View.VISIBLE);
             } else {
@@ -343,5 +411,12 @@ public class NoisePollutionActivity extends AppCompatActivity {
         NetworkHelper networkHelper = new NetworkHelper(NoisePollutionActivity.this);
         networkHelper.uploadToFirebase(rec_model.recording);
         networkHelper.uploadToPostgreSQL(rec_model.recording);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Don't forget to unregister the ACTION_FOUND receiver.
+        unregisterReceiver(receiver);
     }
 }

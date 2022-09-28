@@ -1,5 +1,7 @@
 package gr.hua.stapps.android.noisepollutionapp;
 
+import android.content.Context;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -18,6 +20,9 @@ public class NoisePollutionViewModel extends ViewModel {
     public Recording recording = new Recording();
     public List<Double> recordings = new ArrayList<>();
     private final Integer isRecording = 1; // 0=not recording, 1 = recording
+    private NoiseCalibration noiseCalibration;
+    private MutableLiveData<Boolean> isBtEnabled = new MutableLiveData<>();
+    private Context context;
 
 
     //Start Recording
@@ -52,6 +57,10 @@ public class NoisePollutionViewModel extends ViewModel {
         return loop;
     }
 
+    public MutableLiveData<Boolean> getIsBtEnabled() {
+        return isBtEnabled;
+    }
+
     public void setPerception(String perception) {
         switch (perception) {
             case ("extremely quiet"):
@@ -73,6 +82,17 @@ public class NoisePollutionViewModel extends ViewModel {
                 recording.setPerception(5);
                 break;
         }
+    }
+
+    public void initializeContext(Context context) {
+        this.context = context;
+        noiseCalibration = new NoiseCalibration(context);
+        isBtEnabled.postValue(noiseCalibration.isBluetoothEnabled());
+    }
+
+    public void calibrate() {
+
+        //noiseCalibration.calibrate();
     }
 
 }

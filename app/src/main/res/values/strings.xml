@@ -30,6 +30,7 @@
     <string name="switch_on">ON</string>
     <string name="switch_advanced">Advanced</string>
     <string name="title_perception">User Perception</string>
+    <string name="calibrate_button">Calibrate</string>
     <string-array name="user_perception">
         <item>extremely quiet</item>
         <item>very quiet</item>
