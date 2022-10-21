@@ -91,8 +91,7 @@ public class NoisePollutionViewModel extends ViewModel {
     }
 
     public void calibrate() {
-
-        //noiseCalibration.calibrate();
+        noiseCalibration.calibrate();
     }
 
 }
