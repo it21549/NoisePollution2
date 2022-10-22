@@ -1,4 +1,4 @@
-package gr.hua.stapps.android.noisepollutionapp;
+package gr.hua.stapps.android.noisepollutionapp.utils;
 
 import android.content.Context;
 import android.content.Intent;

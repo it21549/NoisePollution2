@@ -1,4 +1,4 @@
-package gr.hua.stapps.android.noisepollutionapp;
+package gr.hua.stapps.android.noisepollutionapp.ui;
 
 
 import android.Manifest;
@@ -45,7 +45,12 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 
+import gr.hua.stapps.android.noisepollutionapp.viewmodel.NoisePollutionViewModel;
+import gr.hua.stapps.android.noisepollutionapp.R;
 import gr.hua.stapps.android.noisepollutionapp.databinding.NoisePollutionActivityBinding;
+import gr.hua.stapps.android.noisepollutionapp.network.NetworkHelper;
+import gr.hua.stapps.android.noisepollutionapp.utils.AppCrashHandler;
+import gr.hua.stapps.android.noisepollutionapp.utils.Utils;
 
 
 public class NoisePollutionActivity extends AppCompatActivity {
@@ -64,8 +69,8 @@ public class NoisePollutionActivity extends AppCompatActivity {
     private String deviceAddress;
     public static Handler handler;
     public static BluetoothSocket mmSocket;
-    public static ConnectedThread connectedThread;
-    public static CreateConnectThread createConnectThread;
+    //public static ConnectedThread connectedThread;
+    //public static CreateConnectThread createConnectThread;
     private final static int CONNECTING_STATUS = 1; // used in bluetooth handler to identify message status
     private final static int MESSAGE_READ = 2; // used in bluetooth handler to identify message update
 
@@ -104,8 +109,8 @@ public class NoisePollutionActivity extends AppCompatActivity {
                         String deviceAddress = device.getAddress();
                         System.out.println(LOG_INTRO + "connecting to " + deviceAddress);
                         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                        Thread createConnectThread = new CreateConnectThread(bluetoothAdapter, deviceAddress);
-                        createConnectThread.start();
+                        /*Thread createConnectThread = new CreateConnectThread(bluetoothAdapter, deviceAddress);
+                        createConnectThread.start();*/
                     }
                     return;
                 }
@@ -252,7 +257,7 @@ public class NoisePollutionActivity extends AppCompatActivity {
         binding.recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                connectedThread.write("RECORD");
+                //connectedThread.write("RECORD");
                 binding.stopRec.setClickable(true);
                 hasBeenUploadedUploaded = false;
                 Log.i("MainActivity", "loop is " + rec_model.getLoop().getValue().toString());
@@ -271,7 +276,7 @@ public class NoisePollutionActivity extends AppCompatActivity {
         });
 
         binding.stopRec.setOnClickListener(v -> {
-            connectedThread.write("STOP");
+            //connectedThread.write("STOP");
             rec_model.getLoop().postValue(IS_NOT_RECORDING);
             binding.stopRec.setClickable(false);
             binding.recordButton.setClickable(true);
@@ -444,6 +449,19 @@ public class NoisePollutionActivity extends AppCompatActivity {
         networkHelper.uploadToPostgreSQL(rec_model.recording);
     }
 
+    /* ============================ Terminate Connection at BackPress ====================== */
+    @Override
+    public void onBackPressed() {
+        // Terminate Bluetooth Connection and close app
+/*        if (createConnectThread != null){
+            createConnectThread.cancel();
+        }*/
+        Intent a = new Intent(Intent.ACTION_MAIN);
+        a.addCategory(Intent.CATEGORY_HOME);
+        a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(a);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -451,7 +469,7 @@ public class NoisePollutionActivity extends AppCompatActivity {
         unregisterReceiver(receiver);
     }
 
-    @SuppressLint("MissingPermission")
+/*    @SuppressLint("MissingPermission")
     private class CreateConnectThread extends Thread {
 
         public CreateConnectThread(BluetoothAdapter bluetoothAdapter, String address) {
@@ -476,21 +494,21 @@ public class NoisePollutionActivity extends AppCompatActivity {
                     }
                 }
             };
-            /*
+            *//*
             Use a temporary object that is later assigned to mmSocket
             because mmSocket is final.
-             */
+             *//*
             BluetoothDevice bluetoothDevice = bluetoothAdapter.getRemoteDevice(address);
             BluetoothSocket tmp = null;
             UUID uuid = bluetoothDevice.getUuids()[0].getUuid();
 
             try {
-                /*
+                *//*
                 Get a BluetoothSocket to connect with the given BluetoothDevice.
                 Due to Android device varieties,the method below may not work fo different devices.
                 You should try using other methods i.e. :
                 tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
-                 */
+                 *//*
                 tmp = bluetoothDevice.createInsecureRfcommSocketToServiceRecord(uuid);
 
             } catch (IOException e) {
@@ -567,10 +585,10 @@ public class NoisePollutionActivity extends AppCompatActivity {
             //keep listening to the InputStream until an exception occurs
             while (true) {
                 try {
-                    /*
+                    *//*
                     Read from the InputStream from Arduino until termination character is reached.
                     Then send the whole String message to GUI Handler.
-                     */
+                     *//*
                     buffer[bytes] = (byte) mmInStream.read();
                     String readMessage;
                     if (buffer[bytes] == '\n') {
@@ -588,7 +606,7 @@ public class NoisePollutionActivity extends AppCompatActivity {
             }
         }
 
-        /* Call this from the main activity to send data to the remote device */
+        *//* Call this from the main activity to send data to the remote device *//*
         public void write(String input) {
             byte[] bytes = input.getBytes(); //converts entered String into bytes
             try {
@@ -598,12 +616,12 @@ public class NoisePollutionActivity extends AppCompatActivity {
             }
         }
 
-        /* Call this from the main activity to shutdown the connection */
+        *//* Call this from the main activity to shutdown the connection *//*
         public void cancel() {
             try {
                 mmSocket.close();
             } catch (IOException e) {
             }
         }
-    }
+    }*/
 }

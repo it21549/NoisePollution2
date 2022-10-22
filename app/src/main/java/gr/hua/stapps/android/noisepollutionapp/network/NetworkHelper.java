@@ -1,4 +1,4 @@
-package gr.hua.stapps.android.noisepollutionapp;
+package gr.hua.stapps.android.noisepollutionapp.network;
 
 
 import android.content.Context;
@@ -8,11 +8,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.firebase.database.DatabaseError;
@@ -24,6 +21,8 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import gr.hua.stapps.android.noisepollutionapp.model.Recording;
 
 public class NetworkHelper {
 

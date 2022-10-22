@@ -1,21 +1,15 @@
-package gr.hua.stapps.android.noisepollutionapp;
+package gr.hua.stapps.android.noisepollutionapp.utils;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.util.Log;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
+
+import gr.hua.stapps.android.noisepollutionapp.utils.Utils;
 
 public class NoiseRecorder {
     private static final String LOG_TAG = "NoiseRecorder";

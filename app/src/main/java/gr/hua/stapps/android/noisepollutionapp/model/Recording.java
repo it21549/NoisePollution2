@@ -1,4 +1,4 @@
-package gr.hua.stapps.android.noisepollutionapp;
+package gr.hua.stapps.android.noisepollutionapp.model;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

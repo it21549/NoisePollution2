@@ -1,4 +1,4 @@
-package gr.hua.stapps.android.noisepollutionapp;
+package gr.hua.stapps.android.noisepollutionapp.viewmodel;
 
 import android.content.Context;
 
@@ -11,6 +11,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import gr.hua.stapps.android.noisepollutionapp.model.Recording;
+import gr.hua.stapps.android.noisepollutionapp.utils.NoiseCalibration;
+import gr.hua.stapps.android.noisepollutionapp.utils.backgroundRecording;
 
 public class NoisePollutionViewModel extends ViewModel {
 

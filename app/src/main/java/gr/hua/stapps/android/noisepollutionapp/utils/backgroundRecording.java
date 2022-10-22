@@ -1,4 +1,4 @@
-package gr.hua.stapps.android.noisepollutionapp;
+package gr.hua.stapps.android.noisepollutionapp.utils;
 
 import android.media.AudioRecord;
 import android.util.Log;
