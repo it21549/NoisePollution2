@@ -9,8 +9,6 @@ import android.util.Log;
 
 import java.util.Calendar;
 
-import gr.hua.stapps.android.noisepollutionapp.utils.Utils;
-
 public class NoiseRecorder {
     private static final String LOG_TAG = "NoiseRecorder";
     private static final String BRAND = Build.BRAND;
@@ -50,37 +48,36 @@ public class NoiseRecorder {
     }
 
     private void printBufferSamples(short[] data) {
-        for (int i = 0; i< data.length; i++) {
-            if (i<500) {
-                System.out.print(data[i]+" ");
-                if (i==499)
+        for (int i = 0; i < data.length; i++) {
+            if (i < 500) {
+                System.out.print(data[i] + " ");
+                if (i == 499)
                     System.out.println("-------------------1--------------------");
-            }
-            else if (i<1000) {
-                System.out.print(data[i]+" ");
-                if (i==999)
+            } else if (i < 1000) {
+                System.out.print(data[i] + " ");
+                if (i == 999)
                     System.out.println("-------------------2--------------------");
-            } else if (i<1500) {
+            } else if (i < 1500) {
                 System.out.print(data[i] + " ");
                 if (i == 1499)
                     System.out.println("-------------------3--------------------");
-            } else if (i<2000){
+            } else if (i < 2000) {
                 System.out.print(data[i] + " ");
                 if (i == 1999)
                     System.out.println("-------------------4--------------------");
-            } else if (i<2500){
+            } else if (i < 2500) {
                 System.out.print(data[i] + " ");
                 if (i == 2499)
                     System.out.println("-------------------5--------------------");
-            } else if (i<3000){
+            } else if (i < 3000) {
                 System.out.print(data[i] + " ");
                 if (i == 2999)
                     System.out.println("-------------------6--------------------");
-            } else if (i<3500){
+            } else if (i < 3500) {
                 System.out.print(data[i] + " ");
                 if (i == 3499)
                     System.out.println("-------------------7--------------------");
-            } else if (i<4000){
+            } else if (i < 4000) {
                 System.out.print(data[i] + " ");
                 if (i > 3580)
                     System.out.println("-------------------8--------------------");

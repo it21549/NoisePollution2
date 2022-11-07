@@ -1,18 +1,16 @@
 package gr.hua.stapps.android.noisepollutionapp.network.sockets;
 
-import android.Manifest;
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.Handler;
-
-import androidx.core.app.ActivityCompat;
 
 import java.io.IOException;
 import java.util.UUID;
 
+@SuppressLint("MissingPermission")
 public class CreateConnection extends Thread {
     private static final String LOG = "NoisePollution: CreateConnection -> ";
     private static Context context;

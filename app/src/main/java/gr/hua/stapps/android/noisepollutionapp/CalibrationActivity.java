@@ -1,12 +1,7 @@
 package gr.hua.stapps.android.noisepollutionapp;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -20,6 +15,12 @@ import android.os.Looper;
 import android.os.Message;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -28,6 +29,7 @@ import gr.hua.stapps.android.noisepollutionapp.network.sockets.CreateConnection;
 import gr.hua.stapps.android.noisepollutionapp.network.sockets.DataTransfer;
 import gr.hua.stapps.android.noisepollutionapp.viewmodel.CalibrationViewModel;
 
+@SuppressLint("MissingPermission")
 public class CalibrationActivity extends AppCompatActivity {
 
     private static final String LOG = "CalibrationActivity ->";
