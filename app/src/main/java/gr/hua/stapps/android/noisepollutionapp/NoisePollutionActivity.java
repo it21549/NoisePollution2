@@ -1,4 +1,4 @@
-package gr.hua.stapps.android.noisepollutionapp.ui;
+package gr.hua.stapps.android.noisepollutionapp;
 
 
 import android.Manifest;
@@ -15,8 +15,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -37,16 +35,11 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.UUID;
 
 import gr.hua.stapps.android.noisepollutionapp.viewmodel.NoisePollutionViewModel;
-import gr.hua.stapps.android.noisepollutionapp.R;
 import gr.hua.stapps.android.noisepollutionapp.databinding.NoisePollutionActivityBinding;
 import gr.hua.stapps.android.noisepollutionapp.network.NetworkHelper;
 import gr.hua.stapps.android.noisepollutionapp.utils.AppCrashHandler;
@@ -172,7 +165,10 @@ public class NoisePollutionActivity extends AppCompatActivity {
                     finish();
                 } else {
                     if (ActivityCompat.checkSelfPermission(NoisePollutionActivity.this, Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED) {
-                        rec_model.initializeContext(NoisePollutionActivity.this);
+                        //rec_model.initializeContext(NoisePollutionActivity.this);
+                        Intent intent = new Intent(NoisePollutionActivity.this, CalibrationActivity.class);
+                        intent.putExtra("Key", "Value");
+                        startActivity(intent);
                     } else
                         Toast.makeText(NoisePollutionActivity.this, "permission for bluetooth not granted", Toast.LENGTH_SHORT).show();
                 }
@@ -236,6 +232,7 @@ public class NoisePollutionActivity extends AppCompatActivity {
                 rec_model.recordings.clear();
             }
         };
+
         final Observer<Boolean> calibration_observer = isBtEnabled -> {
             if (isBtEnabled != null) {
                 if (isBtEnabled) {
@@ -447,26 +444,6 @@ public class NoisePollutionActivity extends AppCompatActivity {
         NetworkHelper networkHelper = new NetworkHelper(NoisePollutionActivity.this);
         networkHelper.uploadToFirebase(rec_model.recording);
         networkHelper.uploadToPostgreSQL(rec_model.recording);
-    }
-
-    /* ============================ Terminate Connection at BackPress ====================== */
-    @Override
-    public void onBackPressed() {
-        // Terminate Bluetooth Connection and close app
-/*        if (createConnectThread != null){
-            createConnectThread.cancel();
-        }*/
-        Intent a = new Intent(Intent.ACTION_MAIN);
-        a.addCategory(Intent.CATEGORY_HOME);
-        a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(a);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // Don't forget to unregister the ACTION_FOUND receiver.
-        unregisterReceiver(receiver);
     }
 
 /*    @SuppressLint("MissingPermission")

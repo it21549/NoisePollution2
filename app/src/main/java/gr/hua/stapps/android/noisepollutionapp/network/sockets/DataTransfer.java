@@ -49,7 +49,7 @@ public class DataTransfer extends Thread {
                 String readMessage;
                 if (buffer[bytes] == '\n') {
                     readMessage = new String(buffer, 0, bytes);
-                    System.out.println(LOG + "Arduino Message is: " + readMessage);
+                    //System.out.println(LOG + "Arduino Message is: " + readMessage);
                     handler.obtainMessage(MESSAGE_READ, readMessage).sendToTarget();
                     bytes = 0;
                 } else {
@@ -68,6 +68,7 @@ public class DataTransfer extends Thread {
         byte[] bytes = input.getBytes(); //converts entered String into bytes
         try {
             mmOutStream.write(bytes);
+            System.out.println(LOG + "Sent message: " + input);
         } catch (IOException e) {
             System.out.println(LOG + "Failed to send message with: " + e);
         }

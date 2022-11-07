@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/calibration_title_margin_top"
+        android:fontFamily="serif"
+        android:text="Calibration"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextCalibrationI"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:fontFamily="serif"
+        android:inputType="textPersonName"
+        android:text="Calibration group I"
+        android:layout_marginTop="70dp"
+        android:layout_marginStart="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <TextView
+        android:id="@+id/textViewCalibrationGroupI"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="This is the description of group 1  bla bla bla bla bla"
+        android:textSize="@dimen/group_description_text_size"
+        app:layout_constraintStart_toStartOf="@id/editTextCalibrationI"
+        app:layout_constraintTop_toBottomOf="@id/editTextCalibrationI"/>
+
+    <Button
+        android:id="@+id/buttonCalibrationGroupI"
+        style="@android:style/Widget.CompoundButton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginEnd="30dp"
+        android:gravity="center"
+        android:text="@string/calibrate_text_button"
+        android:textSize="@dimen/calibration_button_text_size"
+        app:layout_constraintBottom_toBottomOf="@id/textViewCalibrationGroupI"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextCalibrationII"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:fontFamily="serif"
+        android:inputType="textPersonName"
+        android:text="Calibration group II"
+        android:layout_marginTop="70dp"
+        android:layout_marginStart="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextCalibrationI" />
+
+    <TextView
+        android:id="@+id/textViewCalibrationGroupII"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="This is the description of group 2  bla bla bla bla bla"
+        android:textSize="@dimen/group_description_text_size"
+        app:layout_constraintStart_toStartOf="@id/editTextCalibrationII"
+        app:layout_constraintTop_toBottomOf="@id/editTextCalibrationII" />
+
+    <Button
+        android:id="@+id/buttonCalibrationGroupII"
+        style="@android:style/Widget.CompoundButton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginEnd="30dp"
+        android:gravity="center"
+        android:text="@string/calibrate_text_button"
+        android:textSize="@dimen/calibration_button_text_size"
+        app:layout_constraintBottom_toBottomOf="@id/textViewCalibrationGroupII"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextCalibrationIII"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:fontFamily="serif"
+        android:inputType="textPersonName"
+        android:text="Calibration group III"
+        android:layout_marginTop="70dp"
+        android:layout_marginStart="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextCalibrationII" />
+
+    <TextView
+        android:id="@+id/textViewCalibrationGroupIII"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="This is the description of group 3  bla bla bla bla bla"
+        android:textSize="@dimen/group_description_text_size"
+        android:layout_marginStart="10dp"
+        app:layout_constraintTop_toBottomOf="@id/editTextCalibrationIII"
+        app:layout_constraintStart_toStartOf="@id/editTextCalibrationIII"/>
+
+    <Button
+        android:id="@+id/buttonCalibrationGroupIII"
+        style="@android:style/Widget.CompoundButton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginEnd="30dp"
+        android:gravity="center"
+        android:text="@string/calibrate_text_button"
+        android:textSize="@dimen/calibration_button_text_size"
+        app:layout_constraintBottom_toBottomOf="@id/textViewCalibrationGroupIII"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextCalibrationIV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:fontFamily="serif"
+        android:inputType="textPersonName"
+        android:text="Calibration group IV"
+        android:layout_marginTop="70dp"
+        android:layout_marginStart="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextCalibrationIII" />
+
+    <TextView
+        android:id="@+id/textViewCalibrationGroupIV"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="This is the description of group 1  bla bla bla bla bla"
+        android:textSize="@dimen/group_description_text_size"
+        android:layout_marginStart="10dp"
+        app:layout_constraintTop_toBottomOf="@id/editTextCalibrationIV"
+        app:layout_constraintStart_toStartOf="@id/editTextCalibrationIV"/>
+
+    <Button
+        android:id="@+id/buttonCalibrationGroupIV"
+        style="@android:style/Widget.CompoundButton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginEnd="30dp"
+        android:gravity="center"
+        android:text="@string/calibrate_text_button"
+        android:textSize="@dimen/calibration_button_text_size"
+        app:layout_constraintBottom_toBottomOf="@id/textViewCalibrationGroupIV"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/connect_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_30dp"
+        android:text="Connect to Calibrator"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
