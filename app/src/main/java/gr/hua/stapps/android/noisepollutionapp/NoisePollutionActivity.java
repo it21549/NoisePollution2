@@ -44,6 +44,8 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import gr.hua.stapps.android.noisepollutionapp.databinding.NoisePollutionActivityBinding;
 
@@ -78,6 +80,7 @@ public class NoisePollutionActivity extends AppCompatActivity {
     private static final int REQUEST_ENABLE_BLUETOOTH = 100;
     private static final String LOG_INTRO = "NoisePollutionActivity: ";
 
+/*  TODO: DELETE
     // Create a BroadcastReceiver for ACTION_FOUND.
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -111,7 +114,7 @@ public class NoisePollutionActivity extends AppCompatActivity {
                 }
             }
         }
-    };
+    };*/
 
     boolean hasBeenUploadedUploaded;
 
@@ -125,12 +128,13 @@ public class NoisePollutionActivity extends AppCompatActivity {
         binding = NoisePollutionActivityBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+/*      TODO: DELETE
         // Register for broadcasts when a device is discovered.
         IntentFilter actionFoundFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         IntentFilter actionDiscoveryStartedFilter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
         registerReceiver(receiver, actionFoundFilter);
         registerReceiver(receiver, actionDiscoveryStartedFilter);
-
+*/
         //Provide ViewModel
         rec_model = new ViewModelProvider(this).get(NoisePollutionViewModel.class);
 
@@ -167,7 +171,11 @@ public class NoisePollutionActivity extends AppCompatActivity {
                     finish();
                 } else {
                     if (ActivityCompat.checkSelfPermission(NoisePollutionActivity.this, Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED) {
-                        rec_model.initializeContext(NoisePollutionActivity.this);
+                        Intent intent = new Intent(NoisePollutionActivity.this, CalibrationActivity.class);
+                        intent.putExtra("Key", "Value");
+                        startActivity(intent);
+                        //TODO: DELETE
+                        //rec_model.initializeContext(NoisePollutionActivity.this);
                     } else
                         Toast.makeText(NoisePollutionActivity.this, "permission for bluetooth not granted", Toast.LENGTH_SHORT).show();
                 }
@@ -231,6 +239,7 @@ public class NoisePollutionActivity extends AppCompatActivity {
                 rec_model.recordings.clear();
             }
         };
+/*      TODO: DELETE
         final Observer<Boolean> calibration_observer = isBtEnabled -> {
             if (isBtEnabled != null) {
                 if (isBtEnabled) {
@@ -243,16 +252,18 @@ public class NoisePollutionActivity extends AppCompatActivity {
                 }
             } else
                 System.out.println(LOG_INTRO + "isBtEnabled is null");
-        };
+        };*/
 
         rec_model.getData().observe(this, rec_observer);
         rec_model.getLoop().observe(this, up_observer);
-        rec_model.getIsBtEnabled().observe(this, calibration_observer);
+        //TODO: DELETE
+        //rec_model.getIsBtEnabled().observe(this, calibration_observer);
 
         binding.recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                connectedThread.write("RECORD");
+                //TODO: DELETE
+                //connectedThread.write("RECORD");
                 binding.stopRec.setClickable(true);
                 hasBeenUploadedUploaded = false;
                 Log.i("MainActivity", "loop is " + rec_model.getLoop().getValue().toString());
@@ -271,7 +282,8 @@ public class NoisePollutionActivity extends AppCompatActivity {
         });
 
         binding.stopRec.setOnClickListener(v -> {
-            connectedThread.write("STOP");
+            //TODO: DELETE
+            //connectedThread.write("STOP");
             rec_model.getLoop().postValue(IS_NOT_RECORDING);
             binding.stopRec.setClickable(false);
             binding.recordButton.setClickable(true);
@@ -447,10 +459,12 @@ public class NoisePollutionActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // Don't forget to unregister the ACTION_FOUND receiver.
-        unregisterReceiver(receiver);
+        //TODO: DELETE
+        //Don't forget to unregister the ACTION_FOUND receiver.
+//        unregisterReceiver(receiver);
     }
 
+    //TODO: DELETE
     @SuppressLint("MissingPermission")
     private class CreateConnectThread extends Thread {
 
@@ -537,6 +551,7 @@ public class NoisePollutionActivity extends AppCompatActivity {
         }
     }
 
+    //TODO: DELETE
     //Thread for data transfer
     public class ConnectedThread extends Thread {
         private BluetoothSocket mmSocket;
@@ -590,6 +605,7 @@ public class NoisePollutionActivity extends AppCompatActivity {
 
         /* Call this from the main activity to send data to the remote device */
         public void write(String input) {
+            Logger.getGlobal().log(Level.INFO, LOG_INTRO + "Sending message: " + input);
             byte[] bytes = input.getBytes(); //converts entered String into bytes
             try {
                 mmOutStream.write(bytes);

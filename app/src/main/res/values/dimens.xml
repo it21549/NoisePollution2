@@ -8,4 +8,7 @@
     <dimen name="margin_30dp">30dp</dimen>
     <dimen name="text_size_14sp">14sp</dimen>
     <dimen name="radioGroup_width_191dp">191dp</dimen>
+    <dimen name="calibration_title_margin_top">50dp</dimen>
+    <dimen name="group_description_text_size">13sp</dimen>
+    <dimen name="calibration_button_text_size">11sp</dimen>
 </resources>
