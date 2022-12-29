@@ -52,7 +52,7 @@ public class DataThread extends Thread {
                 String readMessage;
                 if (buffer[bytes] == '\n') {
                     readMessage = new String(buffer, 0, bytes);
-                    System.out.println("Arduino Message: " + readMessage);
+                    //System.out.println("Arduino Message: " + readMessage);
                     handler.obtainMessage(MESSAGE_READ, readMessage).sendToTarget();
                     bytes = 0;
                 } else {
@@ -67,12 +67,11 @@ public class DataThread extends Thread {
 
     public void write(String input) {
         Logger.getGlobal().log(Level.INFO, LOG_INTRO + "Sending message: " + input);
-
         byte[] bytes = input.getBytes(); //converts entered String into bytes
         try {
             mmOutStream.write(bytes);
         } catch (IOException e) {
-            System.out.println("Send Error ->" + "Unable to send message: " + e);
+            Logger.getGlobal().log(Level.INFO, LOG_INTRO + "Send Error:" + "Unable to send message: " + e);
         }
     }
 

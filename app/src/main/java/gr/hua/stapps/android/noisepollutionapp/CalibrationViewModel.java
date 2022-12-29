@@ -42,8 +42,7 @@ public class CalibrationViewModel extends ViewModel {
                     }
                     break;
                 case MESSAGE_READ:
-                    String arduinoMsg = msg.obj.toString(); //Read message from Arduino
-                    System.out.println("NoisePollution " + "the message received is: " + arduinoMsg);
+                    espMessage.postValue(msg.obj.toString());  //Read message from Arduino
             }
         }
     };

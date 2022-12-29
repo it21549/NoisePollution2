@@ -10,10 +10,12 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @SuppressLint("MissingPermission")
 public class ConnectionThread extends Thread {
-    private static final String LOG = "NoisePollution: CreateConnection -> ";
+    private static final String LOG_INTRO = "ConnectionThread -> ";
     private BluetoothSocket mmSocket;
     private Handler handler;
     private DataThread dataThread;
@@ -40,7 +42,7 @@ public class ConnectionThread extends Thread {
             tmp = bluetoothDevice.createInsecureRfcommSocketToServiceRecord(uuid);
 
         } catch (IOException e) {
-            Log.e("NoisePollution", "Socket's create() method failed", e);
+            Logger.getGlobal().log(Level.INFO, LOG_INTRO + "Socket's create() method failed:" + e);
         }
         mmSocket = tmp;
     }
@@ -53,16 +55,16 @@ public class ConnectionThread extends Thread {
             // Connect to the remote device through the socket. This call blocks
             // until it succeeds or throws an exception.
             mmSocket.connect();
-            Log.e("Status", "Device connected");
+            Logger.getGlobal().log(Level.INFO, LOG_INTRO + "Status: " + "Device connected");
             handler.obtainMessage(CONNECTING_STATUS, 1, -1).sendToTarget();
         } catch (IOException connectException) {
             // Unable to connect; close the socket and return.
             try {
                 mmSocket.close();
-                Log.e("Status", "Cannot connect to device");
+                Logger.getGlobal().log(Level.INFO, "Status: " + "Cannot connect to device");
                 handler.obtainMessage(CONNECTING_STATUS, -1, -1).sendToTarget();
             } catch (IOException closeException) {
-                Log.e("NoisePollution", "Could not close the client socket", closeException);
+                Logger.getGlobal().log(Level.INFO, LOG_INTRO + "Could not close the client socket:" + closeException);
             }
             return;
         }
@@ -82,7 +84,7 @@ public class ConnectionThread extends Thread {
         try {
             mmSocket.close();
         } catch (IOException e) {
-            Log.e("NoisePollution ", "Could not close the client socket", e);
+            Logger.getGlobal().log(Level.INFO, LOG_INTRO + "Could not close the client socket:" + e);
         }
     }
 }

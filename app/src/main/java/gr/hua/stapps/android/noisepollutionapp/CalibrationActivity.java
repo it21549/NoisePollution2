@@ -10,13 +10,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.view.View;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.Observer;
@@ -41,7 +36,7 @@ public class CalibrationActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            Logger.getGlobal().log(Level.INFO, LOG_INTRO + "action is: " + action);
+            //Logger.getGlobal().log(Level.INFO, LOG_INTRO + "action is: " + action);
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 // Discovery has found a device. Get the BluetoothDevice
                 // object and its info from the Intent.
@@ -56,7 +51,7 @@ public class CalibrationActivity extends AppCompatActivity {
                     // for ActivityCompat#requestPermissions for more details.
                     String deviceName = device.getName();
                     String deviceHardwareAddress = device.getAddress(); //MAC address
-                    //System.out.println(LOG_INTRO + "deviceName= " + deviceName + " and mac= " + deviceHardwareAddress + " and UUID= " + Arrays.toString(device.getUuids()));
+                    Logger.getGlobal().log(Level.INFO, LOG_INTRO + "FOUND: deviceName= " + deviceName + " and mac= " + deviceHardwareAddress + " and UUID= " + Arrays.toString(device.getUuids()));
                     if (Objects.equals(deviceName, "ESP32test")) {
                         Logger.getGlobal().log(Level.INFO, LOG_INTRO + "Found ESP32Test! Connecting to " + deviceHardwareAddress);
                         calibrationViewModel.initConnectionThread(deviceHardwareAddress);
@@ -115,12 +110,19 @@ public class CalibrationActivity extends AppCompatActivity {
                 }
             }
         };
+        final Observer<String> espMessage_observer = espMessage -> {
+            if (espMessage != null) {
+                Logger.getGlobal().log(Level.INFO, LOG_INTRO + "message received is: " + espMessage);
+            }
+        };
         calibrationViewModel.getIsBluetoothEnabled().observe(this, calibration_observer);
         calibrationViewModel.getIsConnectedToESP().observe(this, connection_observer);
+        calibrationViewModel.getEspMessage().observe(this, espMessage_observer);
     }
 
     public void setListeners() {
         binding.connectButton.setOnClickListener(view -> {
+            binding.connectButton.setClickable(false);
             // Use this check to determine whether Bluetooth classic is supported on the device.
             // Then you can selectively disable BLE-related features.
             if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) {
@@ -129,8 +131,10 @@ public class CalibrationActivity extends AppCompatActivity {
             } else {
                 if (ActivityCompat.checkSelfPermission(CalibrationActivity.this, Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED) {
                     calibrationViewModel.initNoiseCalibration(CalibrationActivity.this);
-                } else
+                } else {
                     Toast.makeText(CalibrationActivity.this, "permission for bluetooth not granted", Toast.LENGTH_SHORT).show();
+                    binding.connectButton.setClickable(true);
+                }
             }
         });
         binding.buttonCalibrationGroupI.setOnClickListener(view -> {
