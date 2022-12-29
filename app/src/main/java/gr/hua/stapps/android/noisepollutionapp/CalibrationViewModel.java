@@ -14,12 +14,12 @@ public class CalibrationViewModel extends ViewModel {
         return isBluetoothEnabled;
     }
 
-    public void initializeContext(Context context) {
+    public void initNoiseCalibration(Context context) {
         noiseCalibration = new NoiseCalibration(context);
         isBluetoothEnabled.postValue(noiseCalibration.isBluetoothEnabled());
     }
 
-    public void calibrate() {
-        noiseCalibration.calibrate();
+    public void searchForDevices() {
+        noiseCalibration.startDiscovery();
     }
 }

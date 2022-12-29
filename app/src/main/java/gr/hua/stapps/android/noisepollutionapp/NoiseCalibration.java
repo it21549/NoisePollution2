@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
-import android.content.Intent;
 
 public class NoiseCalibration {
     private static final String LOG_INTRO = "CalibratePhone: ";
@@ -33,8 +32,8 @@ public class NoiseCalibration {
     }
 
     @SuppressLint("MissingPermission")
-    public void calibrate() {
-        System.out.println(LOG_INTRO + "calibrating now");
+    public void startDiscovery() {
+        System.out.println(LOG_INTRO + "starting discovery");
         bluetoothAdapter.startDiscovery();
     }
 }

@@ -122,7 +122,7 @@ public class CalibrationActivity extends AppCompatActivity {
             if (isBluetoothEnabled != null) {
                 if (isBluetoothEnabled) {
                     Logger.getGlobal().log(Level.INFO, LOG_INTRO + "bluetooth is enabled");
-                    calibrationViewModel.calibrate();
+                    calibrationViewModel.searchForDevices();
                 } else {
                     Logger.getGlobal().log(Level.INFO, LOG_INTRO + "asking to enable bluetooth");
                     Intent enableBluetoothIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -145,7 +145,7 @@ public class CalibrationActivity extends AppCompatActivity {
                     finish();
                 } else {
                     if (ActivityCompat.checkSelfPermission(CalibrationActivity.this, Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED) {
-                        calibrationViewModel.initializeContext(CalibrationActivity.this);
+                        calibrationViewModel.initNoiseCalibration(CalibrationActivity.this);
                     } else
                         Toast.makeText(CalibrationActivity.this, "permission for bluetooth not granted", Toast.LENGTH_SHORT).show();
                 }
