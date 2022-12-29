@@ -8,7 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.util.Calendar;
 
-public class backgroundRecording {
+public class BackgroundRecording {
 
     private static final String LOG_TAG = "backRec";
     private MutableLiveData<Double> data;
@@ -26,7 +26,7 @@ public class backgroundRecording {
         return data;
     }
 
-    public backgroundRecording() {
+    public BackgroundRecording() {
         data = new MutableLiveData<>();
         loop = new MutableLiveData<>();
         //noiseRecorder = new NoiseRecorder();

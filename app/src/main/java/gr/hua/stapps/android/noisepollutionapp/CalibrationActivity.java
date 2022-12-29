@@ -10,12 +10,16 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -31,6 +35,9 @@ public class CalibrationActivity extends AppCompatActivity {
     private static final String LOG_INTRO = "CalibrationActivity -> ";
 
     private static final int REQUEST_ENABLE_BLUETOOTH = 100;
+    private static final int RECORDING_PERMISSION = 0;
+
+    private Boolean permissionToRecord = false;
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -81,6 +88,45 @@ public class CalibrationActivity extends AppCompatActivity {
 
         setListeners();
         setObservers();
+        requestPermission();
+    }
+
+    public void requestPermission() {
+        //Request permission to record if it is not already granted
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (ActivityCompat.checkSelfPermission(CalibrationActivity.this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                    System.out.println("Permission to record granted");
+                    permissionToRecord = true;
+                } else {
+                    System.out.println("Permission to record not granted");
+                    permissionToRecord = false;
+                    requestAudioPermission();
+                }
+            }
+        }).start();
+    }
+
+    private void requestAudioPermission() {
+        //Permission has not been granted and must be requested.
+        if (ActivityCompat.shouldShowRequestPermissionRationale(CalibrationActivity.this, Manifest.permission.RECORD_AUDIO)) {
+            // Provide an additional rationale to the user if the permission was not granted
+            // and the user would benefit from additional context for the use of the permission.
+            // Display a SnackBar with cda button to request the missing permission.
+            Log.d("PERMISSIONS", "requestMicPermission()/if");
+            Snackbar.make(binding.getRoot(), "Permission to record audio is required", Snackbar.LENGTH_INDEFINITE).setAction("Audio Permission", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Request the permission
+                    ActivityCompat.requestPermissions(CalibrationActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, RECORDING_PERMISSION);
+                }
+            }).show();
+        } else {
+            Snackbar.make(binding.getRoot(), "Audio recording not available", Snackbar.LENGTH_SHORT).show();
+            //Request the permission. The result will be received in onRequestPermissionResult().
+            ActivityCompat.requestPermissions(CalibrationActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, RECORDING_PERMISSION);
+        }
     }
 
     @SuppressLint("MissingPermission")

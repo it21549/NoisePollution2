@@ -14,7 +14,7 @@ import java.util.Locale;
 
 public class NoisePollutionViewModel extends ViewModel {
 
-    private backgroundRecording task = new backgroundRecording();
+    private BackgroundRecording task = new BackgroundRecording();
     private LiveData<Double> data;
     private MutableLiveData<Integer> loop;
     public Recording recording = new Recording();

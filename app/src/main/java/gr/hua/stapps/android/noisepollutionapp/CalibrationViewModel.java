@@ -1,6 +1,5 @@
 package gr.hua.stapps.android.noisepollutionapp;
 
-import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
@@ -11,6 +10,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,7 +20,15 @@ public class CalibrationViewModel extends ViewModel {
     private static final String LOG_INTRO = "CalibrationViewModel -> ";
     private final static int CONNECTING_STATUS = 1; // used in bluetooth handler to identify message status
     private final static int MESSAGE_READ = 2; // used in bluetooth handler to identify message update
+    private final static String STOP_RECORDING = "STOP";
 
+    //Recording
+    private BackgroundRecording task = new BackgroundRecording();
+    private LiveData<Double> localData;
+    private MutableLiveData<Integer> loop;
+    private List<Double> recordings = new ArrayList<>();
+
+    //Calibration
     private ConnectionThread connectionThread;
     private NoiseCalibration noiseCalibration;
     private MutableLiveData<Boolean> isBluetoothEnabled = new MutableLiveData<>();
@@ -71,9 +80,18 @@ public class CalibrationViewModel extends ViewModel {
 
     public void sendCommand(String command) {
         connectionThread.getDataThread().write(command);
+        startBackgroundRecording();
     }
 
     public LiveData<String> getEspMessage() {
         return espMessage;
+    }
+
+    private void stopRecording() {
+        sendCommand(STOP_RECORDING);
+    }
+
+    private void startBackgroundRecording() {
+        Logger.getGlobal().log(Level.INFO, "Starting to record locally");
     }
 }
