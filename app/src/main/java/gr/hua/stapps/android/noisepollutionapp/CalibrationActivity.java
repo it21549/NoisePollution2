@@ -35,31 +35,7 @@ public class CalibrationActivity extends AppCompatActivity {
     private CalibrationViewModel calibrationViewModel;
     private static final String LOG_INTRO = "CalibrationActivity -> ";
 
-    private final static int CONNECTING_STATUS = 1; // used in bluetooth handler to identify message status
-    private final static int MESSAGE_READ = 2; // used in bluetooth handler to identify message update
     private static final int REQUEST_ENABLE_BLUETOOTH = 100;
-
-    private ConnectionThread connectionThread;
-    public static Handler handler = new Handler(Looper.getMainLooper()) {
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            switch (msg.what) {
-                case CONNECTING_STATUS:
-                    switch (msg.arg1) {
-                        case 1:
-                            System.out.println("NoisePollution " + "connected to " + "ESP32");
-                            break;
-                        case -1:
-                            System.out.println("NoisePollution " + "device fails to connect");
-                            break;
-                    }
-                    break;
-                case MESSAGE_READ:
-                    String arduinoMsg = msg.obj.toString(); //Read message from Arduino
-                    System.out.println("NoisePollution " + "the message received is: " + arduinoMsg);
-            }
-        }
-    };
 
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -80,14 +56,10 @@ public class CalibrationActivity extends AppCompatActivity {
                     // for ActivityCompat#requestPermissions for more details.
                     String deviceName = device.getName();
                     String deviceHardwareAddress = device.getAddress(); //MAC address
-                    System.out.println(LOG_INTRO + "deviceName= " + deviceName + " and mac= " + deviceHardwareAddress + " and UUID= " + Arrays.toString(device.getUuids()));
-
+                    //System.out.println(LOG_INTRO + "deviceName= " + deviceName + " and mac= " + deviceHardwareAddress + " and UUID= " + Arrays.toString(device.getUuids()));
                     if (Objects.equals(deviceName, "ESP32test")) {
-                        String deviceAddress = device.getAddress();
-                        System.out.println(LOG_INTRO + "connecting to " + deviceAddress);
-                        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                        connectionThread = new ConnectionThread(bluetoothAdapter, deviceAddress, handler);
-                        connectionThread.start();
+                        Logger.getGlobal().log(Level.INFO, LOG_INTRO + "Found ESP32Test! Connecting to " + deviceHardwareAddress);
+                        calibrationViewModel.initConnectionThread(deviceHardwareAddress);
                     }
                     return;
                 }
@@ -101,11 +73,11 @@ public class CalibrationActivity extends AppCompatActivity {
         binding = ActivityCalibrationBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Register for broadcasts when a device is discovered.
-        registerReceivers();
-
         //Provide ViewModel
         calibrationViewModel = new ViewModelProvider(this).get(CalibrationViewModel.class);
+
+        // Register for broadcasts when a device is discovered.
+        registerReceivers();
 
         // Get values from previous activity
         Intent intent = getIntent();
@@ -128,53 +100,67 @@ public class CalibrationActivity extends AppCompatActivity {
                     Intent enableBluetoothIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                     startActivityForResult(enableBluetoothIntent, REQUEST_ENABLE_BLUETOOTH);
                 }
-            } else
-                Logger.getGlobal().log(Level.INFO, LOG_INTRO + "isBluetoothEnabled is false");
+            } else Logger.getGlobal().log(Level.INFO, LOG_INTRO + "isBluetoothEnabled is false");
+        };
+        final Observer<Boolean> connection_observer = isConnectedToESP -> {
+            if (isConnectedToESP != null) {
+                if (isConnectedToESP) {
+                    Logger.getGlobal().log(Level.INFO, LOG_INTRO + " connected to ESP");
+                    binding.connectButton.setClickable(false);
+                    areCommandButtonsClickable(true);
+                    binding.buttonCalibrationGroupIV.setClickable(false);
+                } else {
+                    Toast.makeText(this, "Could not connect to calibration device, please retry in a few moments.", Toast.LENGTH_LONG).show();
+                    binding.connectButton.setClickable(true);
+                }
+            }
         };
         calibrationViewModel.getIsBluetoothEnabled().observe(this, calibration_observer);
+        calibrationViewModel.getIsConnectedToESP().observe(this, connection_observer);
     }
 
     public void setListeners() {
-        binding.connectButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Use this check to determine whether Bluetooth classic is supported on the device.
-                // Then you can selectively disable BLE-related features.
-                if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) {
-                    Toast.makeText(CalibrationActivity.this, "R.string.bluetooth_not_supported", Toast.LENGTH_SHORT).show();
-                    finish();
-                } else {
-                    if (ActivityCompat.checkSelfPermission(CalibrationActivity.this, Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED) {
-                        calibrationViewModel.initNoiseCalibration(CalibrationActivity.this);
-                    } else
-                        Toast.makeText(CalibrationActivity.this, "permission for bluetooth not granted", Toast.LENGTH_SHORT).show();
-                }
+        binding.connectButton.setOnClickListener(view -> {
+            // Use this check to determine whether Bluetooth classic is supported on the device.
+            // Then you can selectively disable BLE-related features.
+            if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) {
+                Toast.makeText(CalibrationActivity.this, "R.string.bluetooth_not_supported", Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                if (ActivityCompat.checkSelfPermission(CalibrationActivity.this, Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED) {
+                    calibrationViewModel.initNoiseCalibration(CalibrationActivity.this);
+                } else
+                    Toast.makeText(CalibrationActivity.this, "permission for bluetooth not granted", Toast.LENGTH_SHORT).show();
             }
         });
-        binding.buttonCalibrationGroupI.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                connectionThread.getDataThread().write("RECORD0");
-            }
+        binding.buttonCalibrationGroupI.setOnClickListener(view -> {
+            calibrationViewModel.sendCommand("RECORD0");
+            areCommandButtonsClickable(false);
+            binding.buttonCalibrationGroupIV.setClickable(true);
         });
-        binding.buttonCalibrationGroupII.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                connectionThread.getDataThread().write("RECORD1");
-            }
+        binding.buttonCalibrationGroupII.setOnClickListener(view -> {
+            calibrationViewModel.sendCommand("RECORD1");
+            areCommandButtonsClickable(false);
+            binding.buttonCalibrationGroupIV.setClickable(true);
         });
-        binding.buttonCalibrationGroupIII.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                connectionThread.getDataThread().write("RECORD2");
-            }
+        binding.buttonCalibrationGroupIII.setOnClickListener(view -> {
+            calibrationViewModel.sendCommand("RECORD2");
+            areCommandButtonsClickable(false);
+            binding.buttonCalibrationGroupIV.setClickable(true);
         });
-        binding.buttonCalibrationGroupIV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                connectionThread.getDataThread().write("STOP");
-            }
+        binding.buttonCalibrationGroupIV.setOnClickListener(view -> {
+            calibrationViewModel.sendCommand("STOP");
+            areCommandButtonsClickable(true);
+            binding.buttonCalibrationGroupIV.setClickable(false);
         });
+        areCommandButtonsClickable(false);
+    }
+
+    public void areCommandButtonsClickable(Boolean clickable) {
+        binding.buttonCalibrationGroupI.setClickable(clickable);
+        binding.buttonCalibrationGroupII.setClickable(clickable);
+        binding.buttonCalibrationGroupIII.setClickable(clickable);
+        binding.buttonCalibrationGroupIV.setClickable(clickable);
     }
 
     public void registerReceivers() {

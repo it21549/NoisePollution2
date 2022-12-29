@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".CalibrationActivity">
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
@@ -39,7 +40,7 @@
         android:text="This is the description of group 1  bla bla bla bla bla"
         android:textSize="@dimen/group_description_text_size"
         app:layout_constraintStart_toStartOf="@id/editTextCalibrationI"
-        app:layout_constraintTop_toBottomOf="@id/editTextCalibrationI"/>
+        app:layout_constraintTop_toBottomOf="@id/editTextCalibrationI" />
 
     <Button
         android:id="@+id/buttonCalibrationGroupI"
@@ -107,11 +108,11 @@
         android:id="@+id/textViewCalibrationGroupIII"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
         android:text="This is the description of group 3  bla bla bla bla bla"
         android:textSize="@dimen/group_description_text_size"
-        android:layout_marginStart="10dp"
-        app:layout_constraintTop_toBottomOf="@id/editTextCalibrationIII"
-        app:layout_constraintStart_toStartOf="@id/editTextCalibrationIII"/>
+        app:layout_constraintStart_toStartOf="@id/editTextCalibrationIII"
+        app:layout_constraintTop_toBottomOf="@id/editTextCalibrationIII" />
 
     <Button
         android:id="@+id/buttonCalibrationGroupIII"
@@ -143,11 +144,11 @@
         android:id="@+id/textViewCalibrationGroupIV"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
         android:text="This is the description of group 1  bla bla bla bla bla"
         android:textSize="@dimen/group_description_text_size"
-        android:layout_marginStart="10dp"
-        app:layout_constraintTop_toBottomOf="@id/editTextCalibrationIV"
-        app:layout_constraintStart_toStartOf="@id/editTextCalibrationIV"/>
+        app:layout_constraintStart_toStartOf="@id/editTextCalibrationIV"
+        app:layout_constraintTop_toBottomOf="@id/editTextCalibrationIV" />
 
     <Button
         android:id="@+id/buttonCalibrationGroupIV"
@@ -166,7 +167,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/margin_30dp"
-        android:text="Connect to Calibrator"
+        android:text="@string/connect_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

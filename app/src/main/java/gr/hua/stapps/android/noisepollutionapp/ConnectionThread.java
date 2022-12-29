@@ -20,13 +20,13 @@ public class ConnectionThread extends Thread {
 
     private final static int CONNECTING_STATUS = 1; // used in bluetooth handler to identify message status
 
-    public ConnectionThread(BluetoothAdapter bluetoothAdapter, String address, Handler handler) {
+    public ConnectionThread(String address, Handler handler) {
         this.handler = handler;
         /*
             Use a temporary object that is later assigned to mmSocket
             because mmSocket is final.
              */
-        BluetoothDevice bluetoothDevice = bluetoothAdapter.getRemoteDevice(address);
+        BluetoothDevice bluetoothDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(address);
         BluetoothSocket tmp = null;
         UUID uuid = bluetoothDevice.getUuids()[0].getUuid();
 
