@@ -11,6 +11,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,7 +27,9 @@ public class CalibrationViewModel extends ViewModel {
     private BackgroundRecording task = new BackgroundRecording();
     private LiveData<Double> localData;
     private MutableLiveData<Integer> loop;
-    private List<Double> recordings = new ArrayList<>();
+    private List<Double> localRecording = new ArrayList<>();
+    private static final Integer RECORDING = 1; // 0=not recording, 1 = recording
+    private static final Integer NOT_RECORDING = 0;
 
     //Calibration
     private ConnectionThread connectionThread;
@@ -34,6 +37,7 @@ public class CalibrationViewModel extends ViewModel {
     private MutableLiveData<Boolean> isBluetoothEnabled = new MutableLiveData<>();
     private MutableLiveData<Boolean> isConnectedToESP = new MutableLiveData<>();
     private MutableLiveData<String> espMessage = new MutableLiveData<>();
+    private List<Double> remoteRecording = new ArrayList<>();
     private Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -80,18 +84,51 @@ public class CalibrationViewModel extends ViewModel {
 
     public void sendCommand(String command) {
         connectionThread.getDataThread().write(command);
-        startBackgroundRecording();
+        if (command.contains("RECORD")) {
+            startBackgroundRecording();
+        }
     }
 
     public LiveData<String> getEspMessage() {
         return espMessage;
     }
 
-    private void stopRecording() {
+    public void stopRecording() {
+        if (loop.getValue().equals(RECORDING)){
+            loop.postValue(NOT_RECORDING);
+        }
         sendCommand(STOP_RECORDING);
     }
 
     private void startBackgroundRecording() {
         Logger.getGlobal().log(Level.INFO, "Starting to record locally");
+        loop.postValue(RECORDING);
+        task.start();
+        localData = task.getData();
+    }
+
+    public MutableLiveData<Integer> getLoop() {
+        loop = task.getLoop();
+        return loop;
+    }
+
+    public LiveData<Double> getLocalData() {
+        localData = task.getData();
+        return localData;
+    }
+
+    public void addLocalData(Double localData) {
+        //Logger.getGlobal().log(Level.INFO, LOG_INTRO + "local measurement is: " + localData.toString());
+        localRecording.add(localData);
+    }
+
+    public void addRemoteData(Double remoteData) {
+        remoteRecording.add(remoteData);
+    }
+
+    public void printRecordings() {
+        Logger.getGlobal().log(Level.INFO, LOG_INTRO + "localRecording: " + localRecording);
+        Logger.getGlobal().log(Level.INFO, LOG_INTRO + "remoteRecording: " + remoteRecording);
+
     }
 }

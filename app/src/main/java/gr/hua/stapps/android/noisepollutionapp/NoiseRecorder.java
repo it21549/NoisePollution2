@@ -40,16 +40,16 @@ public class NoiseRecorder {
 
     public Double startRec() {
         final short[] data = new short[minBufferSize];
-        System.out.println("Time started " + Calendar.getInstance().getTimeInMillis());
+        //System.out.println("Time started " + Calendar.getInstance().getTimeInMillis());
         int read_error = recorder.read(data, 0, data.length);
-        System.out.println("Time stopped " + Calendar.getInstance().getTimeInMillis());
-        System.out.println("read error:" + read_error);
+        //System.out.println("Time stopped " + Calendar.getInstance().getTimeInMillis());
+        //System.out.println("read error:" + read_error);
         return computeDecibels(data);
     }
 
     private Double computeDecibels(short[] data) {
         //printBufferSamples(data);
-        System.out.println("Data length = " + data.length + " minbuffer: " + minBufferSize);
+        //System.out.println("Data length = " + data.length + " minbuffer: " + minBufferSize);
         //dB calculation
         double a = Utils.calculateAvg(data, 32768, MAX_DB);
         return a;

@@ -30,6 +30,7 @@ import gr.hua.stapps.android.noisepollutionapp.databinding.ActivityCalibrationBi
 
 public class CalibrationActivity extends AppCompatActivity {
 
+    private static final Integer NOT_RECORDING = 0; //Not recording
     private ActivityCalibrationBinding binding;
     private CalibrationViewModel calibrationViewModel;
     private static final String LOG_INTRO = "CalibrationActivity -> ";
@@ -149,7 +150,6 @@ public class CalibrationActivity extends AppCompatActivity {
                     Logger.getGlobal().log(Level.INFO, LOG_INTRO + " connected to ESP");
                     binding.connectButton.setClickable(false);
                     areCommandButtonsClickable(true);
-                    binding.buttonCalibrationGroupIV.setClickable(false);
                 } else {
                     Toast.makeText(this, "Could not connect to calibration device, please retry in a few moments.", Toast.LENGTH_LONG).show();
                     binding.connectButton.setClickable(true);
@@ -159,11 +159,33 @@ public class CalibrationActivity extends AppCompatActivity {
         final Observer<String> espMessage_observer = espMessage -> {
             if (espMessage != null) {
                 Logger.getGlobal().log(Level.INFO, LOG_INTRO + "message received is: " + espMessage);
+                try {
+                    calibrationViewModel.addRemoteData(Double.parseDouble(espMessage));
+                } catch (Exception e) {
+                    Logger.getGlobal().log(Level.INFO, LOG_INTRO + "Error parsing double: " + e);
+                }
+                if (calibrationViewModel.getLoop().getValue().equals(NOT_RECORDING)) {
+                    calibrationViewModel.printRecordings();
+                }
+            }
+        };
+        final Observer<Double> localData_observer = localData -> {
+          if (localData != null) {
+              calibrationViewModel.addLocalData(localData);
+          }
+        };
+        final Observer<Integer> loop_observer = integer -> {
+            if (integer.equals(NOT_RECORDING) && Boolean.TRUE.equals(calibrationViewModel.getIsConnectedToESP().getValue())) {
+                Logger.getGlobal().log(Level.INFO, LOG_INTRO + "to Stop recording is called");
+                calibrationViewModel.stopRecording();
+                areCommandButtonsClickable(true);
             }
         };
         calibrationViewModel.getIsBluetoothEnabled().observe(this, calibration_observer);
         calibrationViewModel.getIsConnectedToESP().observe(this, connection_observer);
         calibrationViewModel.getEspMessage().observe(this, espMessage_observer);
+        calibrationViewModel.getLocalData().observe(this, localData_observer);
+        calibrationViewModel.getLoop().observe(this, loop_observer);
     }
 
     public void setListeners() {
@@ -199,9 +221,8 @@ public class CalibrationActivity extends AppCompatActivity {
             binding.buttonCalibrationGroupIV.setClickable(true);
         });
         binding.buttonCalibrationGroupIV.setOnClickListener(view -> {
-            calibrationViewModel.sendCommand("STOP");
+            calibrationViewModel.stopRecording();
             areCommandButtonsClickable(true);
-            binding.buttonCalibrationGroupIV.setClickable(false);
         });
         areCommandButtonsClickable(false);
     }

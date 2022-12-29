@@ -15,6 +15,7 @@ public class BackgroundRecording {
     private MutableLiveData<Integer> loop;
     final static Integer NOT_REC = 0; // NOT recording
     final static Integer REC = 1; // Recording
+    private final static long RECORDING_TIME = 10000;
 
     public MutableLiveData<Integer> getLoop() {
         return loop;
@@ -51,7 +52,7 @@ public class BackgroundRecording {
                 data.postValue(noiseRecorder.startRec());
                 System.out.println(data.getValue());
                 recTime = Calendar.getInstance().getTimeInMillis();
-                if(recTime-startTime>10000){
+                if(recTime-startTime>RECORDING_TIME){
                     loop.postValue(NOT_REC);
                     Log.i(LOG_TAG + "/START", "STOPPED RECORD ");
                 }
