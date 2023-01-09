@@ -24,7 +24,7 @@ public class CalibrationViewModel extends ViewModel {
     private final static String STOP_RECORDING = "STOP";
 
     //Recording
-    private BackgroundRecording task = new BackgroundRecording();
+    private BackgroundRecording task;
     private LiveData<Double> localData;
     private MutableLiveData<Integer> loop;
     private List<Double> localRecording = new ArrayList<>();
@@ -38,6 +38,10 @@ public class CalibrationViewModel extends ViewModel {
     private MutableLiveData<Boolean> isConnectedToESP = new MutableLiveData<>();
     private MutableLiveData<String> espMessage = new MutableLiveData<>();
     private List<Double> remoteRecording = new ArrayList<>();
+    private String calibrationGroup;
+    private MutableLiveData<Double> calibrationGroupI = new MutableLiveData<>();
+    private MutableLiveData<Double> calibrationGroupII = new MutableLiveData<>();
+    private MutableLiveData<Double> calibrationGroupIII = new MutableLiveData<>();
     private Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -59,6 +63,10 @@ public class CalibrationViewModel extends ViewModel {
             }
         }
     };
+
+    public void initializeBackgroundRecording(double calibrationI, double calibrationII, double calibrationIII) {
+        task = new BackgroundRecording(calibrationI, calibrationII, calibrationIII);
+    }
 
     public void initNoiseCalibration(Context context) {
         noiseCalibration = new NoiseCalibration(context);
@@ -85,6 +93,7 @@ public class CalibrationViewModel extends ViewModel {
     public void sendCommand(String command) {
         connectionThread.getDataThread().write(command);
         if (command.contains("RECORD")) {
+            calibrationGroup = command;
             startBackgroundRecording();
         }
     }
@@ -94,7 +103,7 @@ public class CalibrationViewModel extends ViewModel {
     }
 
     public void stopRecording() {
-        if (loop.getValue().equals(RECORDING)){
+        if (loop.getValue().equals(RECORDING)) {
             loop.postValue(NOT_RECORDING);
         }
         sendCommand(STOP_RECORDING);
@@ -117,6 +126,18 @@ public class CalibrationViewModel extends ViewModel {
         return localData;
     }
 
+    public MutableLiveData<Double> getCalibrationGroupI() {
+        return calibrationGroupI;
+    }
+
+    public MutableLiveData<Double> getCalibrationGroupII() {
+        return calibrationGroupII;
+    }
+
+    public MutableLiveData<Double> getCalibrationGroupIII() {
+        return calibrationGroupIII;
+    }
+
     public void addLocalData(Double localData) {
         //Logger.getGlobal().log(Level.INFO, LOG_INTRO + "local measurement is: " + localData.toString());
         localRecording.add(localData);
@@ -129,6 +150,34 @@ public class CalibrationViewModel extends ViewModel {
     public void printRecordings() {
         Logger.getGlobal().log(Level.INFO, LOG_INTRO + "localRecording: " + localRecording);
         Logger.getGlobal().log(Level.INFO, LOG_INTRO + "remoteRecording: " + remoteRecording);
+        updateCalibrationValues();
 
+    }
+
+    public void updateCalibrationValues() {
+        Double localAverage = 0.0;
+        Double remoteAverage = 0.0;
+        Double calibrationValue;
+        for (int i = 0; i < localRecording.size(); i++) {
+            localAverage += localRecording.get(i);
+        }
+        for (int j = 0; j < remoteRecording.size(); j++) {
+            remoteAverage += remoteRecording.get(j);
+        }
+        localAverage = localAverage/localRecording.size();
+        remoteAverage = remoteAverage/remoteRecording.size();
+        calibrationValue = remoteAverage - localAverage;
+        Logger.getGlobal().log(Level.INFO, LOG_INTRO + "calibrationValue is " + calibrationValue + " of group " + calibrationGroup);
+        switch (calibrationGroup) {
+            case ("RECORD0"):
+                calibrationGroupI.postValue(calibrationValue);
+                break;
+            case ("RECORD1"):
+                calibrationGroupII.postValue(calibrationValue);
+                break;
+            case ("RECORD2"):
+                calibrationGroupIII.postValue(calibrationValue);
+                break;
+        }
     }
 }

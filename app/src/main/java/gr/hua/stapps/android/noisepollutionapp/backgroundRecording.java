@@ -16,6 +16,9 @@ public class BackgroundRecording {
     final static Integer NOT_REC = 0; // NOT recording
     final static Integer REC = 1; // Recording
     private final static long RECORDING_TIME = 10000;
+    private double calibrationGroupI;
+    private double calibrationGroupII;
+    private double calibrationGroupIII;
 
     public MutableLiveData<Integer> getLoop() {
         return loop;
@@ -27,7 +30,10 @@ public class BackgroundRecording {
         return data;
     }
 
-    public BackgroundRecording() {
+    public BackgroundRecording(double calibrationGroupI, double calibrationGroupII, double calibrationGroupIII) {
+        this.calibrationGroupI = calibrationGroupI;
+        this.calibrationGroupII = calibrationGroupII;
+        this.calibrationGroupIII = calibrationGroupIII;
         data = new MutableLiveData<>();
         loop = new MutableLiveData<>();
         //noiseRecorder = new NoiseRecorder();
@@ -39,7 +45,7 @@ public class BackgroundRecording {
         new Thread(() -> {
             long startTime = Calendar.getInstance().getTimeInMillis();
             long recTime = startTime;
-            noiseRecorder = new NoiseRecorder();
+            noiseRecorder = new NoiseRecorder(calibrationGroupI, calibrationGroupII, calibrationGroupIII);
             Log.i(LOG_TAG, "loop.getValue()=" + loop.getValue().toString());
             //Start recording until loop is not true
             while(loop.getValue().equals(REC)&& (recTime-startTime)<10000) {

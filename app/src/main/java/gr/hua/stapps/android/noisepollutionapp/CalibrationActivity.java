@@ -8,8 +8,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -21,6 +23,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -34,7 +37,8 @@ public class CalibrationActivity extends AppCompatActivity {
     private ActivityCalibrationBinding binding;
     private CalibrationViewModel calibrationViewModel;
     private static final String LOG_INTRO = "CalibrationActivity -> ";
-
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
     private static final int REQUEST_ENABLE_BLUETOOTH = 100;
     private static final int RECORDING_PERMISSION = 0;
 
@@ -76,8 +80,18 @@ public class CalibrationActivity extends AppCompatActivity {
         binding = ActivityCalibrationBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        //get preference to save calibration results
+        sharedPreferences = getSharedPreferences("gr.hua.stapps.android.noisepollutionapp.calibration_data", MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+
+        Logger.getGlobal().log(Level.INFO, LOG_INTRO + "previous calibrations show: " + sharedPreferences.getAll().toString());
+
         //Provide ViewModel
         calibrationViewModel = new ViewModelProvider(this).get(CalibrationViewModel.class);
+        double calibrationGroupI = (double) sharedPreferences.getFloat("RECORD0", 0);
+        double calibrationGroupII = (double) sharedPreferences.getFloat("RECORD1", 0);
+        double calibrationGroupIII = (double) sharedPreferences.getFloat("RECORD2", 0);
+        calibrationViewModel.initializeBackgroundRecording(calibrationGroupI, calibrationGroupII, calibrationGroupIII);
 
         // Register for broadcasts when a device is discovered.
         registerReceivers();
@@ -170,9 +184,9 @@ public class CalibrationActivity extends AppCompatActivity {
             }
         };
         final Observer<Double> localData_observer = localData -> {
-          if (localData != null) {
-              calibrationViewModel.addLocalData(localData);
-          }
+            if (localData != null) {
+                calibrationViewModel.addLocalData(localData);
+            }
         };
         final Observer<Integer> loop_observer = integer -> {
             if (integer.equals(NOT_RECORDING) && Boolean.TRUE.equals(calibrationViewModel.getIsConnectedToESP().getValue())) {
@@ -181,11 +195,30 @@ public class CalibrationActivity extends AppCompatActivity {
                 areCommandButtonsClickable(true);
             }
         };
+        final Observer<Double> calibration_groupI_observer = result -> {
+            Logger.getGlobal().log(Level.INFO, LOG_INTRO + "saving.. RECORD0" + result);
+            editor.putFloat("RECORD0", result.floatValue());
+            editor.apply();
+        };
+        final Observer<Double> calibration_groupII_observer = result -> {
+            Logger.getGlobal().log(Level.INFO, LOG_INTRO + "saving.. RECORD1" + result);
+            editor.putFloat("RECORD1", result.floatValue());
+            editor.apply();
+        };
+        final Observer<Double> calibration_groupIII_observer = result -> {
+            Logger.getGlobal().log(Level.INFO, LOG_INTRO + "saving.. RECORD2" + result);
+            editor.putFloat("RECORD2", result.floatValue());
+            editor.apply();
+        };
         calibrationViewModel.getIsBluetoothEnabled().observe(this, calibration_observer);
         calibrationViewModel.getIsConnectedToESP().observe(this, connection_observer);
         calibrationViewModel.getEspMessage().observe(this, espMessage_observer);
         calibrationViewModel.getLocalData().observe(this, localData_observer);
         calibrationViewModel.getLoop().observe(this, loop_observer);
+        calibrationViewModel.getCalibrationGroupI().observe(this, calibration_groupI_observer);
+        calibrationViewModel.getCalibrationGroupII().observe(this, calibration_groupII_observer);
+        calibrationViewModel.getCalibrationGroupIII().observe(this, calibration_groupIII_observer);
+
     }
 
     public void setListeners() {

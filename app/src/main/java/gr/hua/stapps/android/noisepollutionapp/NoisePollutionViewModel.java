@@ -14,7 +14,7 @@ import java.util.Locale;
 
 public class NoisePollutionViewModel extends ViewModel {
 
-    private BackgroundRecording task = new BackgroundRecording();
+    private BackgroundRecording task;
     private LiveData<Double> data;
     private MutableLiveData<Integer> loop;
     public Recording recording = new Recording();
@@ -24,6 +24,10 @@ public class NoisePollutionViewModel extends ViewModel {
     private MutableLiveData<Boolean> isBtEnabled = new MutableLiveData<>();
     private Context context;
 
+
+    public void initializeBackgroundRecording(double calibrationI, double calibrationII, double calibrationIII) {
+        task = new BackgroundRecording(calibrationI, calibrationII, calibrationIII);
+    }
 
     //Start Recording
     public void startBackgroundRecording() {

@@ -10,6 +10,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -70,6 +71,7 @@ public class NoisePollutionActivity extends AppCompatActivity {
     public static CreateConnectThread createConnectThread;
     private final static int CONNECTING_STATUS = 1; // used in bluetooth handler to identify message status
     private final static int MESSAGE_READ = 2; // used in bluetooth handler to identify message update
+    private SharedPreferences sharedPreferences;
 
     public void setPermissionToRecordGranted(Boolean permissionToRecordGranted) {
         this.permissionToRecordGranted = permissionToRecordGranted;
@@ -135,8 +137,19 @@ public class NoisePollutionActivity extends AppCompatActivity {
         registerReceiver(receiver, actionFoundFilter);
         registerReceiver(receiver, actionDiscoveryStartedFilter);
 */
+
+        //get preference to save calibration results
+        sharedPreferences = getSharedPreferences("gr.hua.stapps.android.noisepollutionapp.calibration_data", MODE_PRIVATE);
+
+        Logger.getGlobal().log(Level.INFO, LOG_INTRO + "previous calibrations show: " + sharedPreferences.getAll().toString());
+
         //Provide ViewModel
         rec_model = new ViewModelProvider(this).get(NoisePollutionViewModel.class);
+        double calibrationGroupI = (double) sharedPreferences.getFloat("RECORD0", 0);
+        double calibrationGroupII = (double) sharedPreferences.getFloat("RECORD1", 0);
+        double calibrationGroupIII = (double) sharedPreferences.getFloat("RECORD2", 0);
+        rec_model.initializeBackgroundRecording(calibrationGroupI, calibrationGroupII, calibrationGroupIII);
+
 
         //Handle app crashes with email
         Thread.setDefaultUncaughtExceptionHandler(appCrashHandler);
