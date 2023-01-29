@@ -44,6 +44,7 @@ public class CalibrationViewModel extends ViewModel {
     private final MutableLiveData<String> espMessage = new MutableLiveData<>();
     private double remoteRecording = 0.0;
     private String calibrationGroup;
+    private MutableLiveData<String> retryCalibration = new MutableLiveData<>();
     private final MutableLiveData<Double> calibrationGroupI = new MutableLiveData<>();
     private final MutableLiveData<Double> calibrationGroupII = new MutableLiveData<>();
     private final MutableLiveData<Double> calibrationGroupIII = new MutableLiveData<>();
@@ -94,6 +95,10 @@ public class CalibrationViewModel extends ViewModel {
 
     public MutableLiveData<Boolean> getIsConnectedToESP() {
         return isConnectedToESP;
+    }
+
+    public MutableLiveData<String> getRetryCalibration() {
+        return retryCalibration;
     }
 
     public void sendCommand(String command) {
@@ -176,21 +181,29 @@ public class CalibrationViewModel extends ViewModel {
             case ("RECORD0"):
                 if (group == GROUP_I) {
                     calibrationGroupI.postValue(boundary);
+                } else {
+                    retryCalibration.postValue("RECORD0");
                 }
                 break;
             case ("RECORD1"):
                 if (group == GROUP_II) {
                     calibrationGroupII.postValue(boundary);
+                } else {
+                    retryCalibration.postValue("RECORD1");
                 }
                 break;
             case ("RECORD2"):
                 if (group == GROUP_III) {
                     calibrationGroupIII.postValue(boundary);
+                } else {
+                    retryCalibration.postValue("RECORD2");
                 }
                 break;
             case ("RECORD3"):
                 if (group == GROUP_IV) {
                     calibrationGroupIV.postValue(boundary);
+                } else {
+                    retryCalibration.postValue("RECORD3");
                 }
                 break;
         }

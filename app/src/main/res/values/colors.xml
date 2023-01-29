@@ -14,4 +14,7 @@
     <color name="radio_button_brown">#483838</color>
     <color name="light_brown_background">#d7ccc8</color>
     <color name="light_green_title_highlight">#b4c6b8</color>
+    <color name="default_button_color">#d6d7d7</color>
+    <color name="light_turquoise_completed">#80cbc4</color>
+    <color name="red_retry">#ef5350</color>
 </resources>

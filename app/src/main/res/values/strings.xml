@@ -42,6 +42,9 @@
     <string name="calibration_group_IV_title">Calibration group IV</string>
     <string name="group_IV_description">Calibrate your phone for measurements in extremely loud places</string>
     <string name="connected_to_device">Connected</string>
+    <string name="calibrating">Calibrating..</string>
+    <string name="calibrated">Calibrated</string>
+    <string name="retry_calibration">Retry</string>
     <string-array name="user_perception">
         <item>extremely quiet</item>
         <item>very quiet</item>

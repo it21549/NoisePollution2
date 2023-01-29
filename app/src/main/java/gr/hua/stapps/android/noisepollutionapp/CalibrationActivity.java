@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.PorterDuff;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -193,7 +195,7 @@ public class CalibrationActivity extends AppCompatActivity {
                     Logger.getGlobal().log(Level.INFO, LOG_INTRO + " connected to ESP");
                     binding.connectButton.setClickable(false);
                     binding.connectButton.setText(getResources().getText(R.string.connected_to_device));
-                    binding.connectButton.setBackgroundColor(getResources().getColor(R.color.light_green));
+                    binding.connectButton.setBackgroundColor(getResources().getColor(R.color.light_turquoise_completed));
                     areCommandButtonsClickable(true);
                 } else {
                     Toast.makeText(this, "Could not connect to calibration device, please retry in a few moments.", Toast.LENGTH_LONG).show();
@@ -230,22 +232,31 @@ public class CalibrationActivity extends AppCompatActivity {
             Logger.getGlobal().log(Level.INFO, LOG_INTRO + "saving.. RECORD0 " + result);
             editor.putFloat("RECORD0", result.floatValue());
             editor.apply();
+            binding.buttonCalibrationGroupI.setText(getResources().getText(R.string.calibrated));
+            binding.buttonCalibrationGroupI.getBackground().setColorFilter(ContextCompat.getColor(CalibrationActivity.this, R.color.light_turquoise_completed), PorterDuff.Mode.SRC_IN);
         };
         final Observer<Double> calibration_groupII_observer = result -> {
             Logger.getGlobal().log(Level.INFO, LOG_INTRO + "saving.. RECORD1 " + result);
             editor.putFloat("RECORD1", result.floatValue());
             editor.apply();
+            binding.buttonCalibrationGroupI.setText(getResources().getText(R.string.calibrated));
+            binding.buttonCalibrationGroupI.getBackground().setColorFilter(ContextCompat.getColor(CalibrationActivity.this, R.color.light_turquoise_completed), PorterDuff.Mode.SRC_IN);
         };
         final Observer<Double> calibration_groupIII_observer = result -> {
             Logger.getGlobal().log(Level.INFO, LOG_INTRO + "saving.. RECORD2 " + result);
             editor.putFloat("RECORD2", result.floatValue());
             editor.apply();
+            binding.buttonCalibrationGroupI.setText(getResources().getText(R.string.calibrated));
+            binding.buttonCalibrationGroupI.getBackground().setColorFilter(ContextCompat.getColor(CalibrationActivity.this, R.color.light_turquoise_completed), PorterDuff.Mode.SRC_IN);
         };
         final Observer<Double> calibration_groupIV_observer = result -> {
             Logger.getGlobal().log(Level.INFO, LOG_INTRO + "saving.. RECORD2 " + result);
             editor.putFloat("RECORD3", result.floatValue());
             editor.apply();
+            binding.buttonCalibrationGroupI.setText(getResources().getText(R.string.calibrated));
+            binding.buttonCalibrationGroupI.getBackground().setColorFilter(ContextCompat.getColor(CalibrationActivity.this, R.color.light_turquoise_completed), PorterDuff.Mode.SRC_IN);
         };
+        final Observer<String> retry_calibration_observer = this::retryCalibration;
         calibrationViewModel.getIsBluetoothEnabled().observe(this, calibration_observer);
         calibrationViewModel.getIsConnectedToESP().observe(this, connection_observer);
         calibrationViewModel.getEspMessage().observe(this, espMessage_observer);
@@ -255,6 +266,32 @@ public class CalibrationActivity extends AppCompatActivity {
         calibrationViewModel.getCalibrationGroupII().observe(this, calibration_groupII_observer);
         calibrationViewModel.getCalibrationGroupIII().observe(this, calibration_groupIII_observer);
         calibrationViewModel.getCalibrationGroupIV().observe(this, calibration_groupIV_observer);
+        calibrationViewModel.getRetryCalibration().observe(this, retry_calibration_observer);
+    }
+
+    private void retryCalibration(String group) {
+        switch (group) {
+            case ("RECORD0"):
+                if (binding.buttonCalibrationGroupI.getText() == getResources().getText(R.string.calibrating)) {
+                    binding.buttonCalibrationGroupI.setText(getResources().getText(R.string.retry_calibration));
+                    binding.buttonCalibrationGroupI.getBackground().setColorFilter(ContextCompat.getColor(CalibrationActivity.this, R.color.red_retry), PorterDuff.Mode.SRC_IN);
+                }
+            case ("RECORD1"):
+                if (binding.buttonCalibrationGroupII.getText() == getResources().getText(R.string.calibrating)) {
+                    binding.buttonCalibrationGroupII.setText(getResources().getText(R.string.retry_calibration));
+                    binding.buttonCalibrationGroupII.getBackground().setColorFilter(ContextCompat.getColor(CalibrationActivity.this, R.color.red_retry), PorterDuff.Mode.SRC_IN);
+                }
+            case ("RECORD2"):
+                if (binding.buttonCalibrationGroupIII.getText() == getResources().getText(R.string.calibrating)) {
+                    binding.buttonCalibrationGroupIII.setText(getResources().getText(R.string.retry_calibration));
+                    binding.buttonCalibrationGroupIII.getBackground().setColorFilter(ContextCompat.getColor(CalibrationActivity.this, R.color.red_retry), PorterDuff.Mode.SRC_IN);
+                }
+            case ("RECORD3"):
+                if (binding.buttonCalibrationGroupIV.getText() == getResources().getText(R.string.calibrating)) {
+                    binding.buttonCalibrationGroupIV.setText(getResources().getText(R.string.retry_calibration));
+                    binding.buttonCalibrationGroupIV.getBackground().setColorFilter(ContextCompat.getColor(CalibrationActivity.this, R.color.red_retry), PorterDuff.Mode.SRC_IN);
+                }
+        }
     }
 
     public void setListeners() {
@@ -277,18 +314,26 @@ public class CalibrationActivity extends AppCompatActivity {
         });
         binding.buttonCalibrationGroupI.setOnClickListener(view -> {
             calibrationViewModel.sendCommand("RECORD0");
+            binding.buttonCalibrationGroupI.setText(getResources().getText(R.string.calibrating));
+            binding.buttonCalibrationGroupI.getBackground().setColorFilter(ContextCompat.getColor(CalibrationActivity.this, R.color.pink_user_info_title), PorterDuff.Mode.SRC_IN);
             areCommandButtonsClickable(false);
         });
         binding.buttonCalibrationGroupII.setOnClickListener(view -> {
             calibrationViewModel.sendCommand("RECORD1");
+            binding.buttonCalibrationGroupII.setText(getResources().getText(R.string.calibrating));
+            binding.buttonCalibrationGroupII.getBackground().setColorFilter(ContextCompat.getColor(CalibrationActivity.this, R.color.pink_user_info_title), PorterDuff.Mode.SRC_IN);
             areCommandButtonsClickable(false);
         });
         binding.buttonCalibrationGroupIII.setOnClickListener(view -> {
             calibrationViewModel.sendCommand("RECORD2");
+            binding.buttonCalibrationGroupIII.setText(getResources().getText(R.string.calibrating));
+            binding.buttonCalibrationGroupIII.getBackground().setColorFilter(ContextCompat.getColor(CalibrationActivity.this, R.color.pink_user_info_title), PorterDuff.Mode.SRC_IN);
             areCommandButtonsClickable(false);
         });
         binding.buttonCalibrationGroupIV.setOnClickListener(view -> {
             calibrationViewModel.sendCommand("RECORD3");
+            binding.buttonCalibrationGroupIV.setText(getResources().getText(R.string.calibrating));
+            binding.buttonCalibrationGroupIV.getBackground().setColorFilter(ContextCompat.getColor(CalibrationActivity.this, R.color.pink_user_info_title), PorterDuff.Mode.SRC_IN);
             areCommandButtonsClickable(false);
             //STOP FUNCTIONALITY
             /*            calibrationViewModel.stopRecording();
