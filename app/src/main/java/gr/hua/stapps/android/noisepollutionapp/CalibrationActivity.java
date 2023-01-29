@@ -1,5 +1,10 @@
 package gr.hua.stapps.android.noisepollutionapp;
 
+import static gr.hua.stapps.android.noisepollutionapp.CalibrationUseCase.GROUP_I;
+import static gr.hua.stapps.android.noisepollutionapp.CalibrationUseCase.GROUP_II;
+import static gr.hua.stapps.android.noisepollutionapp.CalibrationUseCase.GROUP_III;
+import static gr.hua.stapps.android.noisepollutionapp.CalibrationUseCase.GROUP_IV;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
@@ -88,10 +93,7 @@ public class CalibrationActivity extends AppCompatActivity {
 
         //Provide ViewModel
         calibrationViewModel = new ViewModelProvider(this).get(CalibrationViewModel.class);
-        double calibrationGroupI = (double) sharedPreferences.getFloat("RECORD0", 0);
-        double calibrationGroupII = (double) sharedPreferences.getFloat("RECORD1", 0);
-        double calibrationGroupIII = (double) sharedPreferences.getFloat("RECORD2", 0);
-        calibrationViewModel.initializeBackgroundRecording(calibrationGroupI, calibrationGroupII, calibrationGroupIII);
+        calibrationViewModel.initializeBackgroundRecording(GROUP_I, GROUP_II, GROUP_III, GROUP_IV);
 
         // Register for broadcasts when a device is discovered.
         registerReceivers();
@@ -196,18 +198,23 @@ public class CalibrationActivity extends AppCompatActivity {
             }
         };
         final Observer<Double> calibration_groupI_observer = result -> {
-            Logger.getGlobal().log(Level.INFO, LOG_INTRO + "saving.. RECORD0" + result);
+            Logger.getGlobal().log(Level.INFO, LOG_INTRO + "saving.. RECORD0 " + result);
             editor.putFloat("RECORD0", result.floatValue());
             editor.apply();
         };
         final Observer<Double> calibration_groupII_observer = result -> {
-            Logger.getGlobal().log(Level.INFO, LOG_INTRO + "saving.. RECORD1" + result);
+            Logger.getGlobal().log(Level.INFO, LOG_INTRO + "saving.. RECORD1 " + result);
             editor.putFloat("RECORD1", result.floatValue());
             editor.apply();
         };
         final Observer<Double> calibration_groupIII_observer = result -> {
-            Logger.getGlobal().log(Level.INFO, LOG_INTRO + "saving.. RECORD2" + result);
+            Logger.getGlobal().log(Level.INFO, LOG_INTRO + "saving.. RECORD2 " + result);
             editor.putFloat("RECORD2", result.floatValue());
+            editor.apply();
+        };
+        final Observer<Double> calibration_groupIV_observer = result -> {
+            Logger.getGlobal().log(Level.INFO, LOG_INTRO + "saving.. RECORD2 " + result);
+            editor.putFloat("RECORD3", result.floatValue());
             editor.apply();
         };
         calibrationViewModel.getIsBluetoothEnabled().observe(this, calibration_observer);
@@ -218,7 +225,7 @@ public class CalibrationActivity extends AppCompatActivity {
         calibrationViewModel.getCalibrationGroupI().observe(this, calibration_groupI_observer);
         calibrationViewModel.getCalibrationGroupII().observe(this, calibration_groupII_observer);
         calibrationViewModel.getCalibrationGroupIII().observe(this, calibration_groupIII_observer);
-
+        calibrationViewModel.getCalibrationGroupIV().observe(this, calibration_groupIV_observer);
     }
 
     public void setListeners() {
@@ -254,8 +261,12 @@ public class CalibrationActivity extends AppCompatActivity {
             binding.buttonCalibrationGroupIV.setClickable(true);
         });
         binding.buttonCalibrationGroupIV.setOnClickListener(view -> {
-            calibrationViewModel.stopRecording();
-            areCommandButtonsClickable(true);
+            calibrationViewModel.sendCommand("RECORD3");
+            areCommandButtonsClickable(false);
+            binding.buttonCalibrationGroupIV.setClickable(true);
+            //STOP FUNCTIONALITY
+            /*            calibrationViewModel.stopRecording();
+            areCommandButtonsClickable(true);*/
         });
         areCommandButtonsClickable(false);
     }

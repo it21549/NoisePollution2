@@ -1,5 +1,10 @@
 package gr.hua.stapps.android.noisepollutionapp;
 
+import static gr.hua.stapps.android.noisepollutionapp.CalibrationUseCase.GROUP_I;
+import static gr.hua.stapps.android.noisepollutionapp.CalibrationUseCase.GROUP_II;
+import static gr.hua.stapps.android.noisepollutionapp.CalibrationUseCase.GROUP_III;
+import static gr.hua.stapps.android.noisepollutionapp.CalibrationUseCase.GROUP_IV;
+
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
@@ -11,7 +16,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,22 +31,23 @@ public class CalibrationViewModel extends ViewModel {
     private BackgroundRecording task;
     private LiveData<Double> localData;
     private MutableLiveData<Integer> loop;
-    private List<Double> localRecording = new ArrayList<>();
+    private final List<Double> localRecording = new ArrayList<>();
     private static final Integer RECORDING = 1; // 0=not recording, 1 = recording
     private static final Integer NOT_RECORDING = 0;
 
     //Calibration
     private ConnectionThread connectionThread;
     private NoiseCalibration noiseCalibration;
-    private MutableLiveData<Boolean> isBluetoothEnabled = new MutableLiveData<>();
-    private MutableLiveData<Boolean> isConnectedToESP = new MutableLiveData<>();
-    private MutableLiveData<String> espMessage = new MutableLiveData<>();
-    private List<Double> remoteRecording = new ArrayList<>();
+    private final MutableLiveData<Boolean> isBluetoothEnabled = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> isConnectedToESP = new MutableLiveData<>();
+    private final MutableLiveData<String> espMessage = new MutableLiveData<>();
+    private final List<Double> remoteRecording = new ArrayList<>();
     private String calibrationGroup;
-    private MutableLiveData<Double> calibrationGroupI = new MutableLiveData<>();
-    private MutableLiveData<Double> calibrationGroupII = new MutableLiveData<>();
-    private MutableLiveData<Double> calibrationGroupIII = new MutableLiveData<>();
-    private Handler handler = new Handler(Looper.getMainLooper()) {
+    private final MutableLiveData<Double> calibrationGroupI = new MutableLiveData<>();
+    private final MutableLiveData<Double> calibrationGroupII = new MutableLiveData<>();
+    private final MutableLiveData<Double> calibrationGroupIII = new MutableLiveData<>();
+    private final MutableLiveData<Double> calibrationGroupIV = new MutableLiveData<>();
+    private final Handler handler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(@NonNull Message msg) {
             switch (msg.what) {
@@ -64,8 +69,8 @@ public class CalibrationViewModel extends ViewModel {
         }
     };
 
-    public void initializeBackgroundRecording(double calibrationI, double calibrationII, double calibrationIII) {
-        task = new BackgroundRecording(calibrationI, calibrationII, calibrationIII);
+    public void initializeBackgroundRecording(double calibrationI, double calibrationII, double calibrationIII, double calibrationIV) {
+        task = new BackgroundRecording(calibrationI, calibrationII, calibrationIII, calibrationIV);
     }
 
     public void initNoiseCalibration(Context context) {
@@ -93,6 +98,8 @@ public class CalibrationViewModel extends ViewModel {
     public void sendCommand(String command) {
         connectionThread.getDataThread().write(command);
         if (command.contains("RECORD")) {
+            remoteRecording.clear();
+            localRecording.clear();
             calibrationGroup = command;
             startBackgroundRecording();
         }
@@ -138,9 +145,15 @@ public class CalibrationViewModel extends ViewModel {
         return calibrationGroupIII;
     }
 
+    public MutableLiveData<Double> getCalibrationGroupIV() {
+        return calibrationGroupIV;
+    }
+
     public void addLocalData(Double localData) {
         //Logger.getGlobal().log(Level.INFO, LOG_INTRO + "local measurement is: " + localData.toString());
-        localRecording.add(localData);
+        if (!localData.isNaN()) {
+            localRecording.add(localData);
+        }
     }
 
     public void addRemoteData(Double remoteData) {
@@ -148,7 +161,7 @@ public class CalibrationViewModel extends ViewModel {
     }
 
     public void printRecordings() {
-        Logger.getGlobal().log(Level.INFO, LOG_INTRO + "localRecording: " + localRecording);
+        Logger.getGlobal().log(Level.INFO, LOG_INTRO + "localRecording: " + localRecording + "and size: " + localRecording.size());
         Logger.getGlobal().log(Level.INFO, LOG_INTRO + "remoteRecording: " + remoteRecording);
         updateCalibrationValues();
 
@@ -157,26 +170,39 @@ public class CalibrationViewModel extends ViewModel {
     public void updateCalibrationValues() {
         Double localAverage = 0.0;
         Double remoteAverage = 0.0;
-        Double calibrationValue;
+        double calibrationValue;
         for (int i = 0; i < localRecording.size(); i++) {
             localAverage += localRecording.get(i);
         }
         for (int j = 0; j < remoteRecording.size(); j++) {
             remoteAverage += remoteRecording.get(j);
         }
-        localAverage = localAverage/localRecording.size();
-        remoteAverage = remoteAverage/remoteRecording.size();
+        localAverage = localAverage / localRecording.size();
+        remoteAverage = remoteAverage / remoteRecording.size();
         calibrationValue = remoteAverage - localAverage;
-        Logger.getGlobal().log(Level.INFO, LOG_INTRO + "calibrationValue is " + calibrationValue + " of group " + calibrationGroup);
+        Logger.getGlobal().log(Level.INFO, LOG_INTRO + "localAverage is " + localAverage + " of group " + calibrationGroup);
+        double boundary = CalibrationUseCase.calculateBoundary(localAverage, remoteAverage);
+        double group = CalibrationUseCase.calculateCalibrationGroup(remoteAverage);
         switch (calibrationGroup) {
             case ("RECORD0"):
-                calibrationGroupI.postValue(calibrationValue);
+                if (group == GROUP_I) {
+                    calibrationGroupI.postValue(boundary);
+                }
                 break;
             case ("RECORD1"):
-                calibrationGroupII.postValue(calibrationValue);
+                if (group == GROUP_II) {
+                    calibrationGroupII.postValue(boundary);
+                }
                 break;
             case ("RECORD2"):
-                calibrationGroupIII.postValue(calibrationValue);
+                if (group == GROUP_III) {
+                    calibrationGroupIII.postValue(boundary);
+                }
+                break;
+            case ("RECORD3"):
+                if (group == GROUP_IV) {
+                    calibrationGroupIV.postValue(calibrationValue);
+                }
                 break;
         }
     }

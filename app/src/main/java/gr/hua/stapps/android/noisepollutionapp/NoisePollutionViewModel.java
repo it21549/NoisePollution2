@@ -25,8 +25,8 @@ public class NoisePollutionViewModel extends ViewModel {
     private Context context;
 
 
-    public void initializeBackgroundRecording(double calibrationI, double calibrationII, double calibrationIII) {
-        task = new BackgroundRecording(calibrationI, calibrationII, calibrationIII);
+    public void initializeBackgroundRecording(double calibrationI, double calibrationII, double calibrationIII, double calibrationIV) {
+        task = new BackgroundRecording(calibrationI, calibrationII, calibrationIII, calibrationIV);
     }
 
     //Start Recording

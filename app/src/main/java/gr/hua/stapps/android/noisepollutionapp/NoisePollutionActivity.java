@@ -1,6 +1,11 @@
 package gr.hua.stapps.android.noisepollutionapp;
 
 
+import static gr.hua.stapps.android.noisepollutionapp.CalibrationUseCase.GROUP_I;
+import static gr.hua.stapps.android.noisepollutionapp.CalibrationUseCase.GROUP_II;
+import static gr.hua.stapps.android.noisepollutionapp.CalibrationUseCase.GROUP_III;
+import static gr.hua.stapps.android.noisepollutionapp.CalibrationUseCase.GROUP_IV;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
@@ -145,10 +150,11 @@ public class NoisePollutionActivity extends AppCompatActivity {
 
         //Provide ViewModel
         rec_model = new ViewModelProvider(this).get(NoisePollutionViewModel.class);
-        double calibrationGroupI = (double) sharedPreferences.getFloat("RECORD0", 0);
-        double calibrationGroupII = (double) sharedPreferences.getFloat("RECORD1", 0);
-        double calibrationGroupIII = (double) sharedPreferences.getFloat("RECORD2", 0);
-        rec_model.initializeBackgroundRecording(calibrationGroupI, calibrationGroupII, calibrationGroupIII);
+        double calibrationGroupI = (double) sharedPreferences.getFloat("RECORD0", (float) GROUP_I);
+        double calibrationGroupII = (double) sharedPreferences.getFloat("RECORD1", (float) GROUP_II);
+        double calibrationGroupIII = (double) sharedPreferences.getFloat("RECORD2", (float) GROUP_III);
+        double calibrationGroupIV = (double) sharedPreferences.getFloat("RECORD3", (float) GROUP_IV);
+        rec_model.initializeBackgroundRecording(calibrationGroupI, calibrationGroupII, calibrationGroupIII, calibrationGroupIV);
 
 
         //Handle app crashes with email

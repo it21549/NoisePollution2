@@ -1,5 +1,10 @@
 package gr.hua.stapps.android.noisepollutionapp;
 
+import static gr.hua.stapps.android.noisepollutionapp.CalibrationUseCase.GROUP_I;
+import static gr.hua.stapps.android.noisepollutionapp.CalibrationUseCase.GROUP_II;
+import static gr.hua.stapps.android.noisepollutionapp.CalibrationUseCase.GROUP_III;
+import static gr.hua.stapps.android.noisepollutionapp.CalibrationUseCase.GROUP_IV;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.media.AudioFormat;
@@ -28,6 +33,7 @@ public class NoiseRecorder {
     private Double calibrationGroupI;
     private Double calibrationGroupII;
     private Double calibrationGroupIII;
+    private Double calibrationGroupIV;
 
     @SuppressLint("MissingPermission")
     public NoiseRecorder() {
@@ -44,7 +50,7 @@ public class NoiseRecorder {
     }
 
     @SuppressLint("MissingPermission")
-    public NoiseRecorder(double groupI, double groupII, double groupIII) {
+    public NoiseRecorder(double groupI, double groupII, double groupIII, double groupIV) {
         minBufferSize = AudioRecord.getMinBufferSize(44100, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
         recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, 44100, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, minBufferSize);
         recorder.startRecording();
@@ -52,6 +58,7 @@ public class NoiseRecorder {
         this.calibrationGroupI = groupI;
         this.calibrationGroupII = groupII;
         this.calibrationGroupIII = groupIII;
+        this.calibrationGroupIV = groupIV;
     }
 
     public Double startRec() {
@@ -68,12 +75,19 @@ public class NoiseRecorder {
         //System.out.println("Data length = " + data.length + " minbuffer: " + minBufferSize);
         //dB calculation
         double a = Utils.calculateAvg(data, 32768, MAX_DB);
-        if (a < 55 && a > 0) {
-            a += calibrationGroupI;
-        } else if (a > 54 && a < 75) {
-            a += calibrationGroupII;
-        } else if (a > 74) {
-            a += calibrationGroupIII;
+        Logger.getGlobal().log(Level.INFO, LOG_TAG + "uncalibrated is " + a);
+        if (a < calibrationGroupI && a > 0) {
+            a += GROUP_I - calibrationGroupI;
+            //Logger.getGlobal().log(Level.INFO, LOG_TAG + "GROUP_I calibrated by " + (GROUP_I - calibrationGroupI));
+        } else if (a >= calibrationGroupI && a < calibrationGroupII) {
+            a += GROUP_II - calibrationGroupII;
+            //Logger.getGlobal().log(Level.INFO, LOG_TAG + "GROUP_II calibrated by " + (GROUP_II - calibrationGroupII));
+        } else if (a >= calibrationGroupII && a < calibrationGroupIII) {
+            a += GROUP_III - calibrationGroupIII;
+            //Logger.getGlobal().log(Level.INFO, LOG_TAG + "GROUP_III calibrated by " + (GROUP_III - calibrationGroupIII));
+        } else if (a >= calibrationGroupIII) {
+            a += GROUP_IV - calibrationGroupIV;
+            //Logger.getGlobal().log(Level.INFO, LOG_TAG + "GROUP_IV calibrated by " + (GROUP_IV - calibrationGroupIV));
         }
         return a;
     }
