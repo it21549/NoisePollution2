@@ -255,7 +255,6 @@ public class NoisePollutionActivity extends AppCompatActivity {
             if (integer.equals(IS_NOT_RECORDING)) {
                 binding.stopRec.setClickable(false);
                 binding.recordButton.setClickable(true);
-                rec_model.recordings.clear();
             }
         };
 /*      TODO: DELETE
@@ -283,6 +282,7 @@ public class NoisePollutionActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //TODO: DELETE
                 //connectedThread.write("RECORD");
+                rec_model.recordings.clear();
                 binding.stopRec.setClickable(true);
                 hasBeenUploadedUploaded = false;
                 Log.i("MainActivity", "loop is " + rec_model.getLoop().getValue().toString());
@@ -471,6 +471,7 @@ public class NoisePollutionActivity extends AppCompatActivity {
     private void sendAndRequestResponse() {
         hasBeenUploadedUploaded = true;
         NetworkHelper networkHelper = new NetworkHelper(NoisePollutionActivity.this);
+        rec_model.recording.setDecibels(Utils.calculateAverage(rec_model.recordings));
         networkHelper.uploadToFirebase(rec_model.recording);
         networkHelper.uploadToPostgreSQL(rec_model.recording);
     }

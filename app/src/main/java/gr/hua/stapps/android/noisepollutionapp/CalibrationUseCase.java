@@ -6,10 +6,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class CalibrationUseCase {
-    public static final double GROUP_I = 50;
-    public static final double GROUP_II = 60;
-    public static final double GROUP_III = 70;
-    public static final double GROUP_IV = 80;
+    public static final double GROUP_I = 55;
+    public static final double GROUP_II = 70;
+    public static final double GROUP_III = 80;
+    public static final double GROUP_IV = 90;
 
     public static double calculateCalibrationGroup(double measurement) {
         if (measurement < GROUP_I) {
@@ -33,8 +33,14 @@ public class CalibrationUseCase {
         return boundary - measurement;
     }
 
-    public static void detectOutliers(List<Double> data) {
+    public static double calculateAverage(List<Double> data) {
+        removeOutliers(data);
+        return Utils.calculateAverage(data);
+    }
+
+    public static void removeOutliers(List<Double> data) {
         Collections.sort(data);
+        double multiplier = 1.5;
 
         int q1Index = (int) (data.size() * 0.25);
         double q1 = data.get(q1Index);
@@ -43,12 +49,13 @@ public class CalibrationUseCase {
 
         double iqr = q3 - q1;
 
-        double lowerBound = q1 - 1.5 * iqr;
-        double upperBound = q3 + 1.5 * iqr;
+        double lowerBound = q1 - multiplier * iqr;
+        double upperBound = q3 + multiplier * iqr;
 
         for (double value : data) {
             if (value < lowerBound || value > upperBound) {
                 Logger.getGlobal().log(Level.INFO, "outlier: " + value);
+                data.remove(value);
             }
         }
     }
