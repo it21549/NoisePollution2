@@ -1,6 +1,7 @@
 package gr.hua.stapps.android.noisepollutionapp;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,10 +53,11 @@ public class CalibrationUseCase {
         double lowerBound = q1 - multiplier * iqr;
         double upperBound = q3 + multiplier * iqr;
 
-        for (double value : data) {
+        for (Iterator<Double> iterator = data.iterator(); iterator.hasNext(); ) {
+            Double value = iterator.next();
             if (value < lowerBound || value > upperBound) {
                 Logger.getGlobal().log(Level.INFO, "outlier: " + value);
-                data.remove(value);
+                iterator.remove();
             }
         }
     }
