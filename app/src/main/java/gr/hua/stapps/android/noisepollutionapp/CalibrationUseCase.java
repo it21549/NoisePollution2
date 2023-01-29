@@ -11,6 +11,7 @@ public class CalibrationUseCase {
     public static final double GROUP_II = 70;
     public static final double GROUP_III = 80;
     public static final double GROUP_IV = 90;
+    private static final String LOG_INFO = "CalibrationUseCase -> ";
 
     public static double calculateCalibrationGroup(double measurement) {
         if (measurement < GROUP_I) {
@@ -36,6 +37,7 @@ public class CalibrationUseCase {
 
     public static double calculateAverage(List<Double> data) {
         removeOutliers(data);
+        //Logger.getGlobal().log(Level.INFO, LOG_INFO + "localRecording without outliers: " + data + " size: " + data.size());
         return Utils.calculateAverage(data);
     }
 

@@ -15,8 +15,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -26,9 +26,13 @@ import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.logging.Level;
@@ -42,10 +46,13 @@ public class CalibrationActivity extends AppCompatActivity {
     private ActivityCalibrationBinding binding;
     private CalibrationViewModel calibrationViewModel;
     private static final String LOG_INTRO = "CalibrationActivity -> ";
-    private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
+    private FusedLocationProviderClient mFusedLocationClient;
+    private LocationRequest locationRequest;
+    private LocationCallback locationCallback;
     private static final int REQUEST_ENABLE_BLUETOOTH = 100;
     private static final int RECORDING_PERMISSION = 0;
+    private static final int LOCATION_PERMISSION = 1;
 
     private Boolean permissionToRecord = false;
 
@@ -73,7 +80,6 @@ public class CalibrationActivity extends AppCompatActivity {
                         Logger.getGlobal().log(Level.INFO, LOG_INTRO + "Found ESP32Test! Connecting to " + deviceHardwareAddress);
                         calibrationViewModel.initConnectionThread(deviceHardwareAddress);
                     }
-                    return;
                 }
             }
         }
@@ -86,7 +92,7 @@ public class CalibrationActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         //get preference to save calibration results
-        sharedPreferences = getSharedPreferences("gr.hua.stapps.android.noisepollutionapp.calibration_data", MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences("gr.hua.stapps.android.noisepollutionapp.calibration_data", MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
         Logger.getGlobal().log(Level.INFO, LOG_INTRO + "previous calibrations show: " + sharedPreferences.getAll().toString());
@@ -106,6 +112,27 @@ public class CalibrationActivity extends AppCompatActivity {
         setListeners();
         setObservers();
         requestPermission();
+
+        //Location Request Handling
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(CalibrationActivity.this);
+        locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(2 * 1000);
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+                if (locationResult == null) {
+                    Log.wtf("locationCallback", "locationResult = null");
+                }
+                for (Location location : locationResult.getLocations()) {
+                    if (location != null) {
+                        Logger.getGlobal().log(Level.INFO, LOG_INTRO + "location result exists");
+                        mFusedLocationClient.removeLocationUpdates(locationCallback);
+                    }
+                }
+            }
+        };
     }
 
     public void requestPermission() {
@@ -165,6 +192,8 @@ public class CalibrationActivity extends AppCompatActivity {
                 if (isConnectedToESP) {
                     Logger.getGlobal().log(Level.INFO, LOG_INTRO + " connected to ESP");
                     binding.connectButton.setClickable(false);
+                    binding.connectButton.setText(getResources().getText(R.string.connected_to_device));
+                    binding.connectButton.setBackgroundColor(getResources().getColor(R.color.light_green));
                     areCommandButtonsClickable(true);
                 } else {
                     Toast.makeText(this, "Could not connect to calibration device, please retry in a few moments.", Toast.LENGTH_LONG).show();
@@ -238,6 +267,7 @@ public class CalibrationActivity extends AppCompatActivity {
                 finish();
             } else {
                 if (ActivityCompat.checkSelfPermission(CalibrationActivity.this, Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED) {
+                    requestLocation();
                     calibrationViewModel.initNoiseCalibration(CalibrationActivity.this);
                 } else {
                     Toast.makeText(CalibrationActivity.this, "permission for bluetooth not granted", Toast.LENGTH_SHORT).show();
@@ -248,22 +278,18 @@ public class CalibrationActivity extends AppCompatActivity {
         binding.buttonCalibrationGroupI.setOnClickListener(view -> {
             calibrationViewModel.sendCommand("RECORD0");
             areCommandButtonsClickable(false);
-            binding.buttonCalibrationGroupIV.setClickable(true);
         });
         binding.buttonCalibrationGroupII.setOnClickListener(view -> {
             calibrationViewModel.sendCommand("RECORD1");
             areCommandButtonsClickable(false);
-            binding.buttonCalibrationGroupIV.setClickable(true);
         });
         binding.buttonCalibrationGroupIII.setOnClickListener(view -> {
             calibrationViewModel.sendCommand("RECORD2");
             areCommandButtonsClickable(false);
-            binding.buttonCalibrationGroupIV.setClickable(true);
         });
         binding.buttonCalibrationGroupIV.setOnClickListener(view -> {
             calibrationViewModel.sendCommand("RECORD3");
             areCommandButtonsClickable(false);
-            binding.buttonCalibrationGroupIV.setClickable(true);
             //STOP FUNCTIONALITY
             /*            calibrationViewModel.stopRecording();
             areCommandButtonsClickable(true);*/
@@ -283,6 +309,24 @@ public class CalibrationActivity extends AppCompatActivity {
         IntentFilter actionDiscoveryStartedFilter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
         registerReceiver(receiver, actionFoundFilter);
         registerReceiver(receiver, actionDiscoveryStartedFilter);
+    }
+
+    private void requestLocation() {
+        if (ActivityCompat.checkSelfPermission(CalibrationActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Snackbar.make(binding.getRoot(), "Permission to access gps is required", Snackbar.LENGTH_INDEFINITE).setAction("Location Permission", v -> {
+                //Request permission
+                ActivityCompat.requestPermissions(CalibrationActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION);
+            }).show();
+            binding.connectButton.setClickable(true);
+        } else {
+            mFusedLocationClient.getLastLocation().addOnSuccessListener(CalibrationActivity.this, location -> {
+                if (location == null) {
+                    Toast.makeText(CalibrationActivity.this, "GPS cannot be found", Toast.LENGTH_SHORT).show();
+                    binding.connectButton.setClickable(true);
+                }
+                mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+            });
+        }
     }
 
     @Override

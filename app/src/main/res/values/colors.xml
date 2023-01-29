@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorAccent">@color/radio_button_brown</color>
+    <color name="colorAccent">@color/light_green_highlight_text</color>
     <color name="colorPrimaryDark">@color/turquoise_text</color>
     <color name="colorPrimary">@color/turquoise_text</color>
     <color name="white_decibel_background">#F0F8FF</color>
@@ -10,6 +10,7 @@
     <color name="light_pink_user_info_title">#fbe9e7</color>
     <color name="black_text">#000000</color>
     <color name="light_green">#00cc76</color>
+    <color name="light_green_highlight_text">#70d5a3</color>
     <color name="radio_button_brown">#483838</color>
     <color name="light_brown_background">#d7ccc8</color>
     <color name="light_green_title_highlight">#b4c6b8</color>

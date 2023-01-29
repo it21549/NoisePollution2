@@ -32,14 +32,16 @@
     <string name="title_perception">User Perception</string>
     <string name="calibrate_button">Calibrate</string>
     <string name="calibrate_text_button">Calibrate</string>
-    <string name="connect_button">Connect to Calibrating Device</string>
-    <string name="calibration_title">Calibration</string>
+    <string name="connect_button">Connect to Calibration Device</string>
+    <string name="calibration_title">Calibrate Microphone</string>
     <string name="calibration_group_I_title">Calibration group I</string>
-    <string name="group_I_description">This is the description of group 1 bla bla bla bla bla</string>
+    <string name="group_I_description">Calibrate your phone for measurements in fairly quiet places.</string>
     <string name="calibration_group_II_title">Calibration group II</string>
-    <string name="group_II_description">This is the description of group 2 bla bla bla bla bla</string>
+    <string name="group_II_description">Calibrate your phone for measurements in noisy places.</string>
+    <string name="group_III_description">Calibrate your phone for measurements in very noisy places.</string>
     <string name="calibration_group_IV_title">Calibration group IV</string>
-    <string name="group_IV_description">This is the description of group 1 bla bla bla bla bla</string>
+    <string name="group_IV_description">Calibrate your phone for measurements in extremely loud places</string>
+    <string name="connected_to_device">Connected</string>
     <string-array name="user_perception">
         <item>extremely quiet</item>
         <item>very quiet</item>

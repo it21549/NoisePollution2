@@ -152,7 +152,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:background="@color/light_green_title_highlight"
+                    android:background="@color/light_green_highlight_text"
                     android:text="@string/gender_title"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
@@ -165,7 +165,7 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="start"
                     android:layout_weight="1"
-                    android:buttonTint="@color/radio_button_brown"
+                    android:buttonTint="@color/light_green_highlight_text"
                     android:checked="false"
                     android:text="@string/gender_male"
                     android:textColorLink="@color/black_text"
@@ -177,7 +177,7 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="start"
                     android:layout_weight="1"
-                    android:buttonTint="@color/radio_button_brown"
+                    android:buttonTint="@color/light_green_highlight_text"
                     android:checked="false"
                     android:text="@string/gender_female"
                     android:textSize="@dimen/text_size_14sp" />
@@ -188,7 +188,7 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="start"
                     android:layout_weight="1"
-                    android:buttonTint="@color/radio_button_brown"
+                    android:buttonTint="@color/light_green_highlight_text"
                     android:checked="true"
                     android:text="@string/gender_other"
                     android:textSize="@dimen/text_size_14sp" />
@@ -203,7 +203,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:background="@color/light_green_title_highlight"
+                    android:background="@color/light_green_highlight_text"
                     android:text="@string/title_NoiseType"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
@@ -254,10 +254,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@color/radio_button_brown"
+                android:background="@color/light_green_highlight_text"
                 android:text="@string/title_age"
                 android:textAlignment="center"
-                android:textColor="@color/white_decibel_background"
+                android:textColor="@color/black_text"
+                android:textStyle="bold"
                 android:textSize="@dimen/text_size_14sp" />
 
             <TextView
@@ -265,10 +266,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@color/radio_button_brown"
+                android:background="@color/light_green_highlight_text"
                 android:text="@string/title_perception"
                 android:textAlignment="center"
-                android:textColor="@color/white_decibel_background"
+                android:textColor="@color/black_text"
+                android:textStyle="bold"
                 android:textSize="@dimen/text_size_14sp" />
 
         </TableRow>
