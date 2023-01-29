@@ -11,4 +11,5 @@
     <dimen name="calibration_title_margin_top">50dp</dimen>
     <dimen name="group_description_text_size">13sp</dimen>
     <dimen name="calibration_button_text_size">11sp</dimen>
+    <dimen name="button_text_size_15sp">15sp</dimen>
 </resources>

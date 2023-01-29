@@ -5,6 +5,7 @@
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/light_brown_background"
     android:visibility="visible"
     tools:context=".NoisePollutionActivity">
 
@@ -13,10 +14,19 @@
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
-        android:background="@color/veraman_title"
-        android:text="@string/app_title"
+        android:text="@string/app_name"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="@color/turquoise_text"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/title_imageView" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/title_imageView"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/transparent_leaf_logo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -36,9 +46,9 @@
                 android:layout_width="@dimen/live_row_width_275dp"
                 android:layout_height="@dimen/title_row_height_20dp"
                 android:layout_gravity="center"
-                android:background="@color/turquoise"
                 android:gravity="center"
                 android:text="@string/live_db"
+                android:textColor="@color/radio_button_brown"
                 android:textStyle="bold" />
         </TableRow>
 
@@ -49,7 +59,7 @@
                 android:layout_width="@dimen/live_row_width_275dp"
                 android:layout_height="@dimen/title_row_height_20dp"
                 android:layout_gravity="center"
-                android:background="@color/white_decibel_background"
+                android:background="@color/light_brown_background"
                 android:gravity="center" />
         </TableRow>
 
@@ -59,9 +69,9 @@
                 android:layout_width="@dimen/live_row_width_275dp"
                 android:layout_height="@dimen/title_row_height_20dp"
                 android:layout_gravity="center"
-                android:background="@color/turquoise"
                 android:gravity="center"
                 android:text="@string/avg_header"
+                android:textColor="@color/radio_button_brown"
                 android:textStyle="bold" />
         </TableRow>
 
@@ -72,7 +82,7 @@
                 android:layout_width="@dimen/live_row_width_275dp"
                 android:layout_height="@dimen/title_row_height_20dp"
                 android:layout_gravity="center"
-                android:background="@color/white_decibel_background"
+                android:background="@color/light_brown_background"
                 android:gravity="center" />
         </TableRow>
     </TableLayout>
@@ -82,7 +92,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/rec_button"
-        app:layout_constraintBottom_toTopOf="@+id/switch_advanced"
+        android:textAllCaps="false"
+        android:textSize="@dimen/button_text_size_15sp"
+        app:layout_constraintBottom_toTopOf="@id/calibrate_button"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/stop_rec"
         app:layout_constraintTop_toBottomOf="@+id/live_table" />
@@ -92,6 +104,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/button_stop"
+        android:textAllCaps="false"
+        android:textSize="@dimen/button_text_size_15sp"
         app:layout_constraintBottom_toBottomOf="@+id/record_button"
         app:layout_constraintLeft_toRightOf="@id/record_button"
         app:layout_constraintRight_toRightOf="parent"
@@ -100,7 +114,7 @@
     <Switch
         android:id="@+id/switch_advanced"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:fontFamily="sans-serif"
         android:text="@string/switch_advanced"
         android:textOff="@string/switch_off"
@@ -109,13 +123,14 @@
         app:layout_constraintBottom_toTopOf="@+id/userInfoTable"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/stop_rec" />
+        app:layout_constraintTop_toBottomOf="@id/calibrate_button" />
 
     <TableLayout
         android:id="@+id/userInfoTable"
         android:layout_width="@dimen/info_table_width_382dp"
         android:layout_height="@dimen/info_table_height_240dp"
         android:layout_marginTop="@dimen/margin_30dp"
+        android:background="@color/pink_user_info_title"
         android:gravity="center"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@id/upload_button"
@@ -137,11 +152,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:background="@color/pink_user_info_title"
+                    android:background="@color/light_green_title_highlight"
                     android:text="@string/gender_title"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:textColor="@color/black_text"
                     android:textSize="@dimen/text_size_14sp"
                     android:textStyle="bold" />
 
@@ -151,8 +165,10 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="start"
                     android:layout_weight="1"
+                    android:buttonTint="@color/radio_button_brown"
                     android:checked="false"
                     android:text="@string/gender_male"
+                    android:textColorLink="@color/black_text"
                     android:textSize="@dimen/text_size_14sp" />
 
                 <RadioButton
@@ -161,6 +177,7 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="start"
                     android:layout_weight="1"
+                    android:buttonTint="@color/radio_button_brown"
                     android:checked="false"
                     android:text="@string/gender_female"
                     android:textSize="@dimen/text_size_14sp" />
@@ -171,6 +188,7 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="start"
                     android:layout_weight="1"
+                    android:buttonTint="@color/radio_button_brown"
                     android:checked="true"
                     android:text="@string/gender_other"
                     android:textSize="@dimen/text_size_14sp" />
@@ -185,13 +203,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:background="@color/pink_user_info_title"
+                    android:background="@color/light_green_title_highlight"
                     android:text="@string/title_NoiseType"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     android:textColor="@color/black_text"
+                    android:textColorLink="@color/radio_button_brown"
                     android:textSize="@dimen/text_size_14sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"/>
 
                 <EditText
                     android:id="@+id/editTextAnthropogenic"
@@ -235,24 +254,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@color/pink_user_info_title"
+                android:background="@color/radio_button_brown"
                 android:text="@string/title_age"
                 android:textAlignment="center"
-                android:textColor="@color/black_text"
-                android:textSize="@dimen/text_size_14sp"
-                android:textStyle="bold" />
+                android:textColor="@color/white_decibel_background"
+                android:textSize="@dimen/text_size_14sp" />
 
             <TextView
                 android:id="@+id/textView_perception"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@color/pink_user_info_title"
+                android:background="@color/radio_button_brown"
                 android:text="@string/title_perception"
                 android:textAlignment="center"
-                android:textColor="@color/black_text"
-                android:textSize="@dimen/text_size_14sp"
-                android:textStyle="bold" />
+                android:textColor="@color/white_decibel_background"
+                android:textSize="@dimen/text_size_14sp" />
 
         </TableRow>
 
@@ -274,7 +291,7 @@
             <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/spinner_perception"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"></androidx.appcompat.widget.AppCompatSpinner>
+                android:layout_height="match_parent" />
         </TableRow>
     </TableLayout>
 
@@ -285,7 +302,7 @@
         android:fontFamily="sans-serif-medium"
         android:text="@string/button_upload"
         android:textAllCaps="false"
-        android:textSize="16sp"
+        android:textSize="@dimen/button_text_size_15sp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -296,14 +313,15 @@
         android:id="@+id/calibrate_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_30dp"
         android:fontFamily="sans-serif-medium"
         android:text="@string/calibrate_button"
         android:textAllCaps="false"
-        android:textSize="15sp"
-        app:layout_constraintBottom_toTopOf="@+id/userInfoTable"
+        android:textSize="@dimen/button_text_size_15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/switch_advanced" />
+        app:layout_constraintTop_toBottomOf="@+id/stop_rec"
+        app:layout_constraintBottom_toTopOf="@id/switch_advanced"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
