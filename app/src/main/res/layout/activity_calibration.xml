@@ -14,9 +14,9 @@
         android:layout_marginTop="@dimen/calibration_title_margin_top"
         android:fontFamily="serif"
         android:text="@string/calibration_title"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textColor="@color/turquoise_text"
         android:textStyle="bold"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -28,6 +28,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="70dp"
         android:ems="10"
+        android:focusable="false"
         android:fontFamily="serif"
         android:inputType="textPersonName"
         android:minHeight="48dp"
@@ -64,6 +65,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="70dp"
         android:ems="10"
+        android:focusable="false"
         android:fontFamily="serif"
         android:inputType="textPersonName"
         android:minHeight="48dp"
@@ -100,6 +102,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="70dp"
         android:ems="10"
+        android:focusable="false"
         android:fontFamily="serif"
         android:inputType="textPersonName"
         android:minHeight="48dp"
@@ -136,6 +139,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="70dp"
         android:ems="10"
+        android:focusable="false"
         android:fontFamily="serif"
         android:inputType="textPersonName"
         android:minHeight="48dp"
@@ -171,10 +175,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
         android:text="@string/connect_button"
-        android:textSize="@dimen/button_text_size_15sp"
         android:textAllCaps="false"
-        app:layout_constraintTop_toBottomOf="@id/textView"
+        android:textSize="@dimen/button_text_size_15sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
