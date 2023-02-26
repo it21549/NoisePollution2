@@ -67,23 +67,17 @@ public class NoisePollutionViewModel extends ViewModel {
 
     public void setPerception(String perception) {
         switch (perception) {
-            case ("extremely quiet"):
+            case ("quiet"):
                 recording.setPerception(0);
                 break;
-            case ("very quiet"):
+            case ("noisy"):
                 recording.setPerception(1);
                 break;
-            case ("quiet"):
+            case ("very noisy"):
                 recording.setPerception(2);
                 break;
-            case ("noisy"):
-                recording.setPerception(3);
-                break;
-            case ("very noisy"):
-                recording.setPerception(4);
-                break;
             case ("extremely noisy"):
-                recording.setPerception(5);
+                recording.setPerception(3);
                 break;
         }
     }
