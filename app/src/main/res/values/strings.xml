@@ -35,20 +35,20 @@
     <string name="connect_button">Connect to Calibration Device</string>
     <string name="calibration_title">Calibrate Microphone</string>
     <string name="calibration_group_I_title">Calibration group I</string>
-    <string name="group_I_description">Calibrate your phone for measurements in fairly quiet places.</string>
+    <string name="group_I_description">Calibrate your phone for measurements in comfortable places.</string>
     <string name="calibration_group_II_title">Calibration group II</string>
-    <string name="group_II_description">Calibrate your phone for measurements in noisy places.</string>
-    <string name="group_III_description">Calibrate your phone for measurements in very noisy places.</string>
+    <string name="group_II_description">Calibrate your phone for measurements in almost tolerable places.</string>
+    <string name="group_III_description">Calibrate your phone for measurements in marginally tolerable places.</string>
     <string name="calibration_group_IV_title">Calibration group IV</string>
-    <string name="group_IV_description">Calibrate your phone for measurements in extremely loud places</string>
+    <string name="group_IV_description">Calibrate your phone for measurements in intolerable places</string>
     <string name="connected_to_device">Connected</string>
     <string name="calibrating">Calibrating..</string>
     <string name="calibrated">Calibrated</string>
     <string name="retry_calibration">Retry</string>
     <string-array name="user_perception">
-        <item>quiet</item>
-        <item>noisy</item>
-        <item>very noisy</item>
-        <item>extremely noisy</item>
+        <item>comfortable</item>
+        <item>almost tolerable</item>
+        <item>marginally tolerable</item>
+        <item>intolerable</item>
     </string-array>
 </resources>

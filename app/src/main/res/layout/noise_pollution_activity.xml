@@ -217,7 +217,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:hint="@string/noiseType_anth"
+                    android:hint="Urban"
                     android:inputType="numberDecimal"
                     android:textAlignment="center"
                     android:textSize="@dimen/text_size_14sp" />
@@ -227,7 +227,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:hint="@string/noise_type_nat"
+                    android:hint="Rural"
                     android:inputType="numberDecimal"
                     android:textAlignment="center"
                     android:textSize="@dimen/text_size_14sp" />
@@ -237,7 +237,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:hint="@string/noise_type_tec"
+                    android:hint="Wilderness"
+                    android:inputType="numberDecimal"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/text_size_14sp" />
+
+                <EditText
+                    android:id="@+id/editTextUnderwater"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:hint="Underwater"
+                    android:visibility="visible"
                     android:inputType="numberDecimal"
                     android:textAlignment="center"
                     android:textSize="@dimen/text_size_14sp" />
