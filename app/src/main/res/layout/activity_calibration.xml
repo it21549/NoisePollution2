@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/light_brown_background"
+    tools:context=".CalibrationActivity">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/calibration_title_margin_top"
+        android:fontFamily="serif"
+        android:text="@string/calibration_title"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="@color/turquoise_text"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextCalibrationI"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="70dp"
+        android:ems="10"
+        android:focusable="false"
+        android:fontFamily="serif"
+        android:inputType="textPersonName"
+        android:minHeight="48dp"
+        android:text="@string/calibration_group_I_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/connect_button" />
+
+    <TextView
+        android:id="@+id/textViewCalibrationGroupI"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="@string/group_I_description"
+        android:textSize="@dimen/group_description_text_size"
+        app:layout_constraintStart_toStartOf="@id/editTextCalibrationI"
+        app:layout_constraintTop_toBottomOf="@id/editTextCalibrationI" />
+
+    <Button
+        android:id="@+id/buttonCalibrationGroupI"
+        style="@android:style/Widget.CompoundButton"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginEnd="30dp"
+        android:gravity="center"
+        android:text="@string/calibrate_text_button"
+        android:textSize="@dimen/button_text_size_15sp"
+        app:layout_constraintBottom_toBottomOf="@id/textViewCalibrationGroupI"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextCalibrationII"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="70dp"
+        android:ems="10"
+        android:focusable="false"
+        android:fontFamily="serif"
+        android:inputType="textPersonName"
+        android:minHeight="48dp"
+        android:text="@string/calibration_group_II_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextCalibrationI" />
+
+    <TextView
+        android:id="@+id/textViewCalibrationGroupII"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:minLines="3"
+        android:text="@string/group_II_description"
+        android:textSize="@dimen/group_description_text_size"
+        app:layout_constraintStart_toStartOf="@id/editTextCalibrationII"
+        app:layout_constraintTop_toBottomOf="@id/editTextCalibrationII" />
+
+    <Button
+        android:id="@+id/buttonCalibrationGroupII"
+        style="@android:style/Widget.CompoundButton"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginEnd="30dp"
+        android:gravity="center"
+        android:text="@string/calibrate_text_button"
+        android:textSize="@dimen/button_text_size_15sp"
+        app:layout_constraintBottom_toBottomOf="@id/textViewCalibrationGroupII"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextCalibrationIII"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="70dp"
+        android:ems="10"
+        android:focusable="false"
+        android:fontFamily="serif"
+        android:inputType="textPersonName"
+        android:minHeight="48dp"
+        android:text="Calibration group III"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextCalibrationII" />
+
+    <TextView
+        android:id="@+id/textViewCalibrationGroupIII"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="@string/group_III_description"
+        android:textSize="@dimen/group_description_text_size"
+        app:layout_constraintStart_toStartOf="@id/editTextCalibrationIII"
+        app:layout_constraintTop_toBottomOf="@id/editTextCalibrationIII" />
+
+    <Button
+        android:id="@+id/buttonCalibrationGroupIII"
+        style="@android:style/Widget.CompoundButton"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginEnd="30dp"
+        android:gravity="center"
+        android:text="@string/calibrate_text_button"
+        android:textSize="@dimen/button_text_size_15sp"
+        app:layout_constraintBottom_toBottomOf="@id/textViewCalibrationGroupIII"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextCalibrationIV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="70dp"
+        android:ems="10"
+        android:focusable="false"
+        android:fontFamily="serif"
+        android:inputType="textPersonName"
+        android:minHeight="48dp"
+        android:text="@string/calibration_group_IV_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextCalibrationIII" />
+
+    <TextView
+        android:id="@+id/textViewCalibrationGroupIV"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="@string/group_IV_description"
+        android:textSize="@dimen/group_description_text_size"
+        app:layout_constraintStart_toStartOf="@id/editTextCalibrationIV"
+        app:layout_constraintTop_toBottomOf="@id/editTextCalibrationIV" />
+
+    <Button
+        android:id="@+id/buttonCalibrationGroupIV"
+        style="@android:style/Widget.CompoundButton"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginEnd="30dp"
+        android:gravity="center"
+        android:text="@string/calibrate_text_button"
+        android:textSize="@dimen/button_text_size_15sp"
+        app:layout_constraintBottom_toBottomOf="@id/textViewCalibrationGroupIV"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/connect_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="@string/connect_button"
+        android:textAllCaps="false"
+        android:textSize="@dimen/button_text_size_15sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textView" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

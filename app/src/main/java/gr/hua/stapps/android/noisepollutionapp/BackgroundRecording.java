@@ -8,13 +8,18 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.util.Calendar;
 
-public class backgroundRecording {
+public class BackgroundRecording {
 
     private static final String LOG_TAG = "backRec";
     private MutableLiveData<Double> data;
     private MutableLiveData<Integer> loop;
     final static Integer NOT_REC = 0; // NOT recording
     final static Integer REC = 1; // Recording
+    private final static long RECORDING_TIME = 10000;
+    private final double calibrationGroupI;
+    private final double calibrationGroupII;
+    private final double calibrationGroupIII;
+    private double calibrationGroupIV;
 
     public MutableLiveData<Integer> getLoop() {
         return loop;
@@ -26,7 +31,11 @@ public class backgroundRecording {
         return data;
     }
 
-    public backgroundRecording() {
+    public BackgroundRecording(double calibrationGroupI, double calibrationGroupII, double calibrationGroupIII, double calibrationGroupIV) {
+        this.calibrationGroupI = calibrationGroupI;
+        this.calibrationGroupII = calibrationGroupII;
+        this.calibrationGroupIII = calibrationGroupIII;
+        this.calibrationGroupIV = calibrationGroupIV;
         data = new MutableLiveData<>();
         loop = new MutableLiveData<>();
         //noiseRecorder = new NoiseRecorder();
@@ -38,20 +47,20 @@ public class backgroundRecording {
         new Thread(() -> {
             long startTime = Calendar.getInstance().getTimeInMillis();
             long recTime = startTime;
-            noiseRecorder = new NoiseRecorder();
+            noiseRecorder = new NoiseRecorder(calibrationGroupI, calibrationGroupII, calibrationGroupIII, calibrationGroupIV);
             Log.i(LOG_TAG, "loop.getValue()=" + loop.getValue().toString());
             //Start recording until loop is not true
             while(loop.getValue().equals(REC)&& (recTime-startTime)<10000) {
                 System.out.println("rec loop started ---------------------");
                 try {
-                    Thread.sleep(250);
+                    Thread.sleep(300);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 data.postValue(noiseRecorder.startRec());
                 System.out.println(data.getValue());
                 recTime = Calendar.getInstance().getTimeInMillis();
-                if(recTime-startTime>10000){
+                if(recTime-startTime>RECORDING_TIME){
                     loop.postValue(NOT_REC);
                     Log.i(LOG_TAG + "/START", "STOPPED RECORD ");
                 }

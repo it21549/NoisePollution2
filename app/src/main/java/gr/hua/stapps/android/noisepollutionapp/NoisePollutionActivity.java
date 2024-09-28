@@ -1,12 +1,16 @@
 package gr.hua.stapps.android.noisepollutionapp;
 
 
+import static gr.hua.stapps.android.noisepollutionapp.CalibrationUseCase.GROUP_I;
+import static gr.hua.stapps.android.noisepollutionapp.CalibrationUseCase.GROUP_II;
+import static gr.hua.stapps.android.noisepollutionapp.CalibrationUseCase.GROUP_III;
+import static gr.hua.stapps.android.noisepollutionapp.CalibrationUseCase.GROUP_IV;
+
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -25,10 +29,11 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.text.DecimalFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import gr.hua.stapps.android.noisepollutionapp.databinding.NoisePollutionActivityBinding;
 
@@ -38,25 +43,26 @@ public class NoisePollutionActivity extends AppCompatActivity {
     private NoisePollutionActivityBinding binding;
     private NoisePollutionViewModel rec_model;
     //Handler in case of app crash
-    private Thread.UncaughtExceptionHandler appCrashHandler = new AppCrashHandler(this);
+    private final Thread.UncaughtExceptionHandler appCrashHandler = new AppCrashHandler(this);
 
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
     // Permission to record
     private Boolean permissionToRecordGranted = false;
+
     public void setPermissionToRecordGranted(Boolean permissionToRecordGranted) {
         this.permissionToRecordGranted = permissionToRecordGranted;
     }
 
     private static final int RECORDING_PERMISSION = 0;
     private static final int LOCATION_PERMISSION = 1;
+    private static final String LOG_INTRO = "NoisePollutionActivity: ";
 
     boolean hasBeenUploadedUploaded;
 
-    private static DecimalFormat decimalFormat = new DecimalFormat("#.#");
+    private static final DecimalFormat decimalFormat = new DecimalFormat("#.#");
     final static Integer IS_NOT_RECORDING = 0; //Not recording
-
 
 
     @Override
@@ -65,8 +71,19 @@ public class NoisePollutionActivity extends AppCompatActivity {
         binding = NoisePollutionActivityBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        //get preference to save calibration results
+        SharedPreferences sharedPreferences = getSharedPreferences("gr.hua.stapps.android.noisepollutionapp.calibration_data", MODE_PRIVATE);
+
+        Logger.getGlobal().log(Level.INFO, LOG_INTRO + "previous calibrations show: " + sharedPreferences.getAll().toString());
+
         //Provide ViewModel
         rec_model = new ViewModelProvider(this).get(NoisePollutionViewModel.class);
+        double calibrationGroupI = (double) sharedPreferences.getFloat("RECORD0", (float) GROUP_I);
+        double calibrationGroupII = (double) sharedPreferences.getFloat("RECORD1", (float) GROUP_II);
+        double calibrationGroupIII = (double) sharedPreferences.getFloat("RECORD2", (float) GROUP_III);
+        double calibrationGroupIV = (double) sharedPreferences.getFloat("RECORD3", (float) GROUP_IV);
+        rec_model.initializeBackgroundRecording(calibrationGroupI, calibrationGroupII, calibrationGroupIII, calibrationGroupIV);
+
 
         //Handle app crashes with email
         Thread.setDefaultUncaughtExceptionHandler(appCrashHandler);
@@ -90,6 +107,23 @@ public class NoisePollutionActivity extends AppCompatActivity {
             }
         });
 
+        //Calibration
+        binding.calibrateButton.setOnClickListener(view -> {
+            // Use this check to determine whether Bluetooth classic is supported on the device.
+            // Then you can selectively disable BLE-related features.
+            if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)) {
+                Toast.makeText(NoisePollutionActivity.this, "R.string.bluetooth_not_supported", Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                if (ActivityCompat.checkSelfPermission(NoisePollutionActivity.this, Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_GRANTED) {
+                    Intent intent = new Intent(NoisePollutionActivity.this, CalibrationActivity.class);
+                    intent.putExtra("Key", "Value");
+                    startActivity(intent);
+                } else
+                    Toast.makeText(NoisePollutionActivity.this, "permission for bluetooth not granted", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         //Location Request Handling
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(NoisePollutionActivity.this);
         locationRequest = LocationRequest.create();
@@ -99,11 +133,11 @@ public class NoisePollutionActivity extends AppCompatActivity {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 super.onLocationResult(locationResult);
-                if(locationResult ==  null) {
+                if (locationResult == null) {
                     Log.wtf("locationCallback", "locationResult = null");
                 }
-                for(Location location : locationResult.getLocations()) {
-                    if(location !=null) {
+                for (Location location : locationResult.getLocations()) {
+                    if (location != null) {
                         rec_model.setLocationData(location.getLatitude(), location.getLongitude());
                         mFusedLocationClient.removeLocationUpdates(locationCallback);
                     }
@@ -112,23 +146,20 @@ public class NoisePollutionActivity extends AppCompatActivity {
         };
 
         //Request permission to record if it is not already granted
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (ActivityCompat.checkSelfPermission(NoisePollutionActivity.this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
-                    System.out.println("Permission to record granted");
-                    setPermissionToRecordGranted(true);
-                } else {
-                    System.out.println("Permission to record not granted");
-                    setPermissionToRecordGranted(false);
-                    requestAudioPermission();
-                }
+        new Thread(() -> {
+            if (ActivityCompat.checkSelfPermission(NoisePollutionActivity.this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                System.out.println("Permission to record granted");
+                setPermissionToRecordGranted(true);
+            } else {
+                System.out.println("Permission to record not granted");
+                setPermissionToRecordGranted(false);
+                requestAudioPermission();
             }
         }).start();
 
 
         final Observer<Double> rec_observer = decibels -> {
-            if(!decibels.isNaN()) {
+            if (!decibels.isNaN()) {
                 //Setting live recording value
                 binding.liveDecibels.setText(decimalFormat.format(decibels));
                 rec_model.recording.setDecibels(decibels);
@@ -140,34 +171,30 @@ public class NoisePollutionActivity extends AppCompatActivity {
             }
         };
 
-        final Observer<Integer> up_observer= integer -> {
-            if(integer.equals(IS_NOT_RECORDING)) {
+        final Observer<Integer> up_observer = integer -> {
+            if (integer.equals(IS_NOT_RECORDING)) {
                 binding.stopRec.setClickable(false);
                 binding.recordButton.setClickable(true);
-                rec_model.recordings.clear();
             }
         };
 
         rec_model.getData().observe(this, rec_observer);
         rec_model.getLoop().observe(this, up_observer);
-        
 
-        binding.recordButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                binding.stopRec.setClickable(true);
-                hasBeenUploadedUploaded = false;
-                Log.i("MainActivity", "loop is " + rec_model.getLoop().getValue().toString());
-                if (rec_model.getLoop().getValue().equals(IS_NOT_RECORDING)) { //If not recording
-                    //If permission is granted to record
-                    if (permissionToRecordGranted) {
-                        Log.d("MainActivity", "starting audio recording");
-                        rec_model.startBackgroundRecording();
-                        binding.recordButton.setClickable(false);
-                    } else {
-                        Log.d("DEBUG", permissionToRecordGranted.toString());
-                        requestAudioPermission();
-                    }
+        binding.recordButton.setOnClickListener(v -> {
+            rec_model.recordings.clear();
+            binding.stopRec.setClickable(true);
+            hasBeenUploadedUploaded = false;
+            Log.i("MainActivity", "loop is " + rec_model.getLoop().getValue().toString());
+            if (rec_model.getLoop().getValue().equals(IS_NOT_RECORDING)) { //If not recording
+                //If permission is granted to record
+                if (permissionToRecordGranted) {
+                    Log.d("MainActivity", "starting audio recording");
+                    rec_model.startBackgroundRecording();
+                    binding.recordButton.setClickable(false);
+                } else {
+                    Log.d("DEBUG", permissionToRecordGranted.toString());
+                    requestAudioPermission();
                 }
             }
         });
@@ -244,14 +271,14 @@ public class NoisePollutionActivity extends AppCompatActivity {
                 else {
                     accessLocation();
                 }
-            } else if(hasBeenUploadedUploaded)
+            } else if (hasBeenUploadedUploaded)
                 Toast.makeText(NoisePollutionActivity.this, "You have already uploaded, make a new recording to upload!", Toast.LENGTH_SHORT).show();
             else
                 Toast.makeText(NoisePollutionActivity.this, "You cannot upload while recording!", Toast.LENGTH_SHORT).show();
         });
 
         binding.switchAdvanced.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if(isChecked) {
+            if (isChecked) {
                 binding.userInfoTable.setVisibility(View.VISIBLE);
                 binding.uploadButton.setVisibility(View.VISIBLE);
             } else {
@@ -268,12 +295,9 @@ public class NoisePollutionActivity extends AppCompatActivity {
             // and the user would benefit from additional context for the use of the permission.
             // Display a SnackBar with cda button to request the missing permission.
             Log.d("PERMISSIONS", "requestMicPermission()/if");
-            Snackbar.make(binding.getRoot(), "Permission to record audio is required", Snackbar.LENGTH_INDEFINITE).setAction("Audio Permission", new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //Request the permission
-                    ActivityCompat.requestPermissions(NoisePollutionActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, RECORDING_PERMISSION);
-                }
+            Snackbar.make(binding.getRoot(), "Permission to record audio is required", Snackbar.LENGTH_INDEFINITE).setAction("Audio Permission", v -> {
+                //Request the permission
+                ActivityCompat.requestPermissions(NoisePollutionActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, RECORDING_PERMISSION);
             }).show();
         } else {
             Snackbar.make(binding.getRoot(), "Audio recording not available", Snackbar.LENGTH_SHORT).show();
@@ -303,7 +327,6 @@ public class NoisePollutionActivity extends AppCompatActivity {
     }
 
     public void accessLocation() {
-        final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         System.out.println("in accessLocation()");
         if (ActivityCompat.checkSelfPermission(NoisePollutionActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED /*&& ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED*/) {
             // TODO: Consider calling
@@ -314,26 +337,19 @@ public class NoisePollutionActivity extends AppCompatActivity {
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
 //            Toast.makeText(MainActivity.this, "Location permission is required", Toast.LENGTH_SHORT).show();
-            Snackbar.make(binding.getRoot(), "Permission to access gps is required", Snackbar.LENGTH_INDEFINITE).setAction("Location Permission", new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //Request the permission
-                    ActivityCompat.requestPermissions(NoisePollutionActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION);
-                }
+            Snackbar.make(binding.getRoot(), "Permission to access gps is required", Snackbar.LENGTH_INDEFINITE).setAction("Location Permission", v -> {
+                //Request the permission
+                ActivityCompat.requestPermissions(NoisePollutionActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION);
             }).show();
         } else {
-            mFusedLocationClient.getLastLocation().addOnSuccessListener(NoisePollutionActivity.this, new OnSuccessListener<Location>() {
-                @SuppressLint("MissingPermission")
-                @Override
-                public void onSuccess(Location location) {
-                    if (location != null) {
-                        rec_model.setLocationData(location.getLatitude(), location.getLongitude());
-                        //Send data to database
-                        sendAndRequestResponse();
-                    } else
-                        Toast.makeText(NoisePollutionActivity.this, "GPS cannot be found", Toast.LENGTH_SHORT).show();
-                    mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
-                }
+            mFusedLocationClient.getLastLocation().addOnSuccessListener(NoisePollutionActivity.this, location -> {
+                if (location != null) {
+                    rec_model.setLocationData(location.getLatitude(), location.getLongitude());
+                    //Send data to database
+                    sendAndRequestResponse();
+                } else
+                    Toast.makeText(NoisePollutionActivity.this, "GPS cannot be found", Toast.LENGTH_SHORT).show();
+                mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
             });
         }
     }
@@ -341,6 +357,7 @@ public class NoisePollutionActivity extends AppCompatActivity {
     private void sendAndRequestResponse() {
         hasBeenUploadedUploaded = true;
         NetworkHelper networkHelper = new NetworkHelper(NoisePollutionActivity.this);
+        rec_model.recording.setDecibels(Utils.calculateAverage(rec_model.recordings));
         networkHelper.uploadToFirebase(rec_model.recording);
         networkHelper.uploadToPostgreSQL(rec_model.recording);
     }
